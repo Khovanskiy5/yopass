@@ -2,194 +2,71 @@ package main
 
 import (
 	"context"
-	"crypto/tls"
-	"errors"
-	"flag"
-	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 	"time"
 
-	"github.com/Khovanskiy5/yopass/pkg/server"
-	"github.com/Khovanskiy5/yopass/pkg/yopass"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/collectors"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
+	"github.com/Khovanskiy5/yopass/internal/config"
+	"github.com/Khovanskiy5/yopass/internal/repository"
+	"github.com/Khovanskiy5/yopass/internal/secret/handler"
+	"github.com/Khovanskiy5/yopass/internal/secret/service"
+	"github.com/Khovanskiy5/yopass/internal/server"
+	"github.com/Khovanskiy5/yopass/internal/utils"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
-var logLevel zapcore.Level
-
-func init() {
-	pflag.String("address", "", "listen address (default 0.0.0.0)")
-	pflag.Int("port", 1337, "listen port")
-	pflag.String("database", "memcached", "database backend ('memcached' or 'redis')")
-	pflag.String("asset-path", "public", "path to the assets folder")
-	pflag.Int("max-length", 5242880, "max length of encrypted secret")
-	pflag.String("memcached", "localhost:11211", "memcached address")
-	pflag.Int("metrics-port", -1, "metrics server listen port")
-	pflag.String("redis", "redis://localhost:6379/0", "Redis URL")
-	pflag.String("tls-cert", "", "path to TLS certificate")
-	pflag.String("tls-key", "", "path to TLS key")
-	pflag.Bool("force-onetime-secrets", false, "reject non onetime secrets from being created")
-	pflag.String("cors-allow-origin", "*", "Access-Control-Allow-Origin")
-	pflag.Bool("disable-upload", false, "disable the /file upload endpoints")
-	pflag.Bool("prefetch-secret", true, "Display information that the secret might be one time use")
-	pflag.Bool("disable-features", false, "disable features")
-	pflag.Bool("no-language-switcher", false, "disable the language switcher in the UI")
-	pflag.StringSlice("trusted-proxies", []string{}, "trusted proxy IP addresses or CIDR blocks for X-Forwarded-For header validation")
-	pflag.String("privacy-notice-url", "", "URL to privacy notice page")
-	pflag.String("imprint-url", "", "URL to imprint/legal notice page")
-	pflag.IntSlice("allowed-expirations", []int{3600, 86400, 604800}, "allowed expiration times in seconds")
-	pflag.CommandLine.AddGoFlag(&flag.Flag{Name: "log-level", Usage: "Log level", Value: &logLevel})
-
-	viper.AutomaticEnv()
-	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
-	if err := viper.BindPFlags(pflag.CommandLine); err != nil {
-		log.Fatalf("Unable to bind flags: %v", err)
-	}
-
-	pflag.Parse()
-}
-
 func main() {
-	logger := configureZapLogger()
-	db, err := setupDatabase(logger)
+	// 1. Load configuration
+	cfg, err := config.Load()
 	if err != nil {
-		logger.Fatal("failed to setup database", zap.Error(err))
+		log.Fatalf("failed to load configuration: %v", err)
 	}
-	registry := setupRegistry()
 
-	cert := viper.GetString("tls-cert")
-	key := viper.GetString("tls-key")
-	quit := make(chan os.Signal, 1)
-	
-	allowedExpirations := viper.GetIntSlice("allowed-expirations")
+	// 2. Initialize infrastructure
+	logger := utils.NewLogger()
+	registry := utils.NewRegistry()
+
+	// 3. Setup repository
+	repo, err := repository.NewRepository(cfg, logger)
+	if err != nil {
+		logger.Fatal("failed to setup repository", zap.Error(err))
+	}
+
+	// 4. Setup business logic
 	var allowedExpirationsI32 []int32
-	for _, e := range allowedExpirations {
+	for _, e := range cfg.AllowedExpirations {
 		allowedExpirationsI32 = append(allowedExpirationsI32, int32(e))
 	}
-
-	yopassService := yopass.NewServiceWithExpirations(
-		db,
-		viper.GetInt("max-length"),
-		viper.GetBool("force-onetime-secrets"),
+	secretService := service.NewSecretService(
+		repo,
+		cfg.MaxLength,
+		cfg.ForceOneTimeSecrets,
 		allowedExpirationsI32,
 	)
 
-	y := server.Server{
-		Service:             yopassService,
-		MaxLength:           viper.GetInt("max-length"),
-		Registry:            registry,
-		ForceOneTimeSecrets: viper.GetBool("force-onetime-secrets"),
-		AssetPath:           viper.GetString("asset-path"),
-		Logger:              logger,
-		TrustedProxies:      viper.GetStringSlice("trusted-proxies"),
-	}
-	yopassSrv := &http.Server{
-		Addr:      fmt.Sprintf("%s:%d", viper.GetString("address"), viper.GetInt("port")),
-		Handler:   y.HTTPHandler(),
-		TLSConfig: &tls.Config{MinVersion: tls.VersionTLS12},
-	}
-	go func() {
-		logger.Info("Starting yopass server", zap.String("address", yopassSrv.Addr))
-		logger.Info("Loading assets from: ", zap.String("asset-path", y.AssetPath))
-		err := listenAndServe(yopassSrv, cert, key)
-		if !errors.Is(err, http.ErrServerClosed) {
-			logger.Fatal("yopass stopped unexpectedly", zap.Error(err))
-		}
-	}()
+	// 5. Setup handlers
+	secretHandler := handler.NewSecretHandler(secretService, logger)
+	configHandler := handler.NewConfigHandler(cfg, logger)
 
-	metricsServer := &http.Server{
-		Addr:    fmt.Sprintf("%s:%d", viper.GetString("address"), viper.GetInt("metrics-port")),
-		Handler: metricsHandler(registry),
-	}
-	if port := viper.GetInt("metrics-port"); port > 0 {
-		go func() {
-			logger.Info("Starting yopass metrics server", zap.String("address", metricsServer.Addr))
-			err := listenAndServe(metricsServer, cert, key)
-			if !errors.Is(err, http.ErrServerClosed) {
-				logger.Fatal("metrics server stopped unexpectedly", zap.Error(err))
-			}
-		}()
-	}
+	// 6. Setup router
+	router := server.NewRouter(cfg, secretHandler, configHandler, registry)
 
+	// 7. Start servers
+	srvManager := server.NewServer(cfg, logger, registry)
+	apiSrv := srvManager.Start(router)
+	metricsSrv := srvManager.StartMetrics()
+
+	// 8. Wait for termination signal
+	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	sig := <-quit
-	logger.Info("Shutting down HTTP server", zap.String("signal", sig.String()))
+	logger.Info("Shutting down servers", zap.String("signal", sig.String()))
+
+	// 9. Graceful shutdown
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
-	if err := yopassSrv.Shutdown(ctx); err != nil {
-		logger.Fatal("shutdown error: %s", zap.Error(err))
-	}
-	if port := viper.GetInt("metrics-port"); port > 0 {
-		if err := metricsServer.Shutdown(ctx); err != nil {
-			logger.Fatal("shutdown error: %s", zap.Error(err))
-		}
-	}
-	logger.Info("Server shut down")
-}
-
-// listenAndServe starts a HTTP server on the given addr. It uses TLS if both
-// certFile and keyFile are not empty.
-func listenAndServe(srv *http.Server, certFile string, keyFile string) error {
-	if certFile == "" || keyFile == "" {
-		return srv.ListenAndServe()
-	}
-	return srv.ListenAndServeTLS(certFile, keyFile)
-}
-
-// metricsHandler builds a handler to serve Prometheus metrics
-func metricsHandler(r *prometheus.Registry) http.Handler {
-	mx := http.NewServeMux()
-	mx.Handle("/metrics", promhttp.HandlerFor(r, promhttp.HandlerOpts{EnableOpenMetrics: true}))
-	return mx
-}
-
-func setupRegistry() *prometheus.Registry {
-	registry := prometheus.NewRegistry()
-	registry.MustRegister(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}))
-	registry.MustRegister(collectors.NewGoCollector())
-	return registry
-}
-
-// configureZapLogger uses the `log-level` command line argument to set and replace the zap global logger.
-func configureZapLogger() *zap.Logger {
-	loggerCfg := zap.NewProductionConfig()
-	loggerCfg.Level.SetLevel(logLevel)
-
-	logger, err := loggerCfg.Build()
-	if err != nil {
-		log.Fatalf("Unable to build logger %v", err)
-	}
-	zap.ReplaceGlobals(logger)
-	return logger
-}
-
-func setupDatabase(logger *zap.Logger) (yopass.Repository, error) {
-	var db yopass.Repository
-	switch database := viper.GetString("database"); database {
-	case "memcached":
-		memcached := viper.GetString("memcached")
-		db = server.NewMemcached(memcached)
-		logger.Debug("configured Memcached", zap.String("address", memcached))
-	case "redis":
-		redis := viper.GetString("redis")
-		var err error
-		db, err = server.NewRedis(redis)
-		if err != nil {
-			return nil, fmt.Errorf("invalid Redis URL: %w", err)
-		}
-		logger.Debug("configured Redis", zap.String("url", redis))
-	default:
-		return nil, fmt.Errorf("unsupported database, expected 'memcached' or 'redis' got '%s'", database)
-	}
-	return db, nil
+	srvManager.Shutdown(ctx, apiSrv, metricsSrv)
+	logger.Info("Server gracefully stopped")
 }

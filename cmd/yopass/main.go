@@ -6,7 +6,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Khovanskiy5/yopass/pkg/yopass"
+	"github.com/Khovanskiy5/yopass/internal/secret/client"
+	"github.com/Khovanskiy5/yopass/internal/secret/crypto"
+	"github.com/Khovanskiy5/yopass/internal/secret/domain"
+	"github.com/Khovanskiy5/yopass/internal/utils"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -103,7 +106,7 @@ func decrypt(out io.Writer) error {
 		return fmt.Errorf("Unconfigured yopass decrypt URL, set --api and --url")
 	}
 
-	id, key, _, keyOpt, err := yopass.ParseURL(viper.GetString("decrypt"))
+	id, key, _, keyOpt, err := utils.ParseURL(viper.GetString("decrypt"))
 	if err != nil {
 		return fmt.Errorf("Invalid yopass decrypt URL: %w", err)
 	}
@@ -115,12 +118,12 @@ func decrypt(out io.Writer) error {
 		key = viper.GetString("key")
 	}
 
-	msg, err := yopass.Fetch(viper.GetString("api"), id)
+	msg, err := client.Fetch(viper.GetString("api"), id)
 	if err != nil {
 		return fmt.Errorf("Failed to fetch secret: %w", err)
 	}
 
-	pt, _, err := yopass.Decrypt(strings.NewReader(msg), key)
+	pt, _, err := crypto.Decrypt(strings.NewReader(msg), key)
 	if err != nil {
 		return fmt.Errorf("Failed to decrypt secret: %w", err)
 	}
@@ -170,12 +173,12 @@ func encrypt(in io.ReadCloser, out io.Writer) error {
 		return fmt.Errorf("Failed to generate encryption key: %w", err)
 	}
 
-	msg, err := yopass.Encrypt(in, key)
+	msg, err := crypto.Encrypt(in, key)
 	if err != nil {
 		return fmt.Errorf("Failed to encrypt secret: %w", err)
 	}
 
-	id, err := yopass.Store(viper.GetString("api"), yopass.Secret{
+	id, err := client.Store(viper.GetString("api"), domain.Secret{
 		Expiration: exp,
 		Message:    msg,
 		OneTime:    viper.GetBool("one-time"),
@@ -185,7 +188,7 @@ func encrypt(in io.ReadCloser, out io.Writer) error {
 	}
 
 	url := viper.GetString("url")
-	_, err = fmt.Fprintln(out, yopass.SecretURL(url, id, key, viper.IsSet("file"), viper.IsSet("key")))
+	_, err = fmt.Fprintln(out, utils.SecretURL(url, id, key, viper.IsSet("file"), viper.IsSet("key")))
 	return err
 }
 
@@ -193,7 +196,7 @@ func encryptionKey(key string) (string, error) {
 	if key != "" {
 		return key, nil
 	}
-	return yopass.GenerateKey()
+	return crypto.GenerateKey()
 }
 
 func expiration(s string) int32 {

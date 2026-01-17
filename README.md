@@ -79,26 +79,47 @@ Website: https://yopass.se
   go install github.com/Khovanskiy5/yopass/cmd/yopass@latest
   ```
 
+- Сборка из клонированного репозитория
+
+  ```console
+  go build -o yopass ./cmd/yopass
+  ```
+
 ## Установка / Конфигурация
+
+### Запуск сервера
+
+Вы можете собрать и запустить сервер из исходного кода. По умолчанию Yopass использует **Memcached**. Если вы хотите использовать **Redis**, необходимо явно указать это с помощью флага `--database redis`.
+
+```console
+# Сборка
+go build -o yopass-server ./cmd/yopass-server
+
+# Запуск с Redis (обязательно укажите --database redis)
+./yopass-server --database redis --redis redis://localhost:6379/0
+
+# Запуск с Memcached (используется по умолчанию)
+./yopass-server --memcached localhost:11211
+```
 
 Параметры конфигурации сервера:
 
 Флаги командной строки:
 
 ```console
-$ yopass-server -h
+$ ./yopass-server -h
       --address string             адрес прослушивания (по умолчанию 0.0.0.0)
-      --allowed-expirations ints   допустимое время истечения срока действия в секундах (по умолчанию [3600,86400,604800])
-      --database string            движок базы данных ('memcached' или 'redis') (default "memcached")
+      --port int                   порт прослушивания (по умолчанию 1337)
+      --database string            движок базы данных ('memcached' или 'redis') (по умолчанию "memcached")
+      --asset-path string          путь к папке со статическими файлами (по умолчанию "public")
       --max-length int             максимальная длина зашифрованного секрета (по умолчанию 5242880)
       --memcached string           адрес Memcached (по умолчанию "localhost:11211")
       --metrics-port int           порт прослушивания сервера метрик (по умолчанию -1)
-      --port int                   порт прослушивания (по умолчанию 1337)
       --redis string               URL Redis (по умолчанию "redis://localhost:6379/0")
       --tls-cert string            путь к TLS-сертификату
       --tls-key string             путь к TLS-ключу
-      --cors-allow-origin string   настройка Access-Control-Allow-Origin CORS (по умолчанию "*")
       --force-onetime-secrets      запретить создание секретов, которые не являются одноразовыми
+      --cors-allow-origin string   настройка Access-Control-Allow-Origin CORS (по умолчанию "*")
       --disable-upload             отключить эндпоинты загрузки /file
       --prefetch-secret            отображать информацию о том, что секрет может быть одноразовым (по умолчанию true)
       --disable-features           отключить раздел функций во фронтенде
@@ -106,9 +127,16 @@ $ yopass-server -h
       --trusted-proxies strings    доверенные IP-адреса прокси или блоки CIDR для валидации заголовка X-Forwarded-For
       --privacy-notice-url string  URL страницы уведомления о конфиденциальности
       --imprint-url string         URL страницы с юридической информацией (imprint)
+      --allowed-expirations ints   допустимое время истечения срока действия в секундах (по умолчанию [3600,86400,604800])
 ```
 
-Зашифрованные секреты могут храниться в Memcached или Redis путем изменения флага `--database`. Списки допустимых сроков хранения (expiration) можно настроить с помощью флага `--allowed-expirations`.
+Зашифрованные секреты могут храниться в Memcached или Redis путем изменения флага `--database`. 
+
+**Важно:** Для активации Redis необходимо передать `--database redis`, иначе параметр `--redis` будет проигнорирован.
+
+Списки допустимых сроков хранения (expiration) можно настроить с помощью флага `--allowed-expirations`.
+
+Все настройки также могут быть заданы через переменные окружения с префиксом `YOPASS_`. Например, `YOPASS_PORT=8080` эквивалентно `--port 8080`.
 
 ### Настройка прокси
 
@@ -163,15 +191,22 @@ docker-compose up -d
 
 ### Docker
 
-С TLS-шифрованием:
+Запуск с Memcached (по умолчанию) и TLS:
 
 ```console
 docker run --name memcached_yopass -d memcached
 docker run -p 443:1337 -v /local/certs/:/certs \
-    --link memcached_yopass:memcached -d Khovanskiy5/yopass --memcached=memcached:11211 --tls-key=/certs/tls.key --tls-cert=/certs/tls.crt
+    --link memcached_yopass:memcached -d Khovanskiy5/yopass \
+    --memcached=memcached:11211 --tls-key=/certs/tls.key --tls-cert=/certs/tls.crt
 ```
 
-После этого Yopass будет доступен на порту 443 через все IP-адреса хоста, включая публичные. Чтобы ограничить доступ конкретным IP-адресом, используйте `-p 127.0.0.1:443:1337`.
+Запуск с Redis:
+
+```console
+docker run --name redis_yopass -d redis
+docker run -p 443:1337 --link redis_yopass:redis -d Khovanskiy5/yopass \
+    --database redis --redis redis://redis:6379/0
+```
 
 Без TLS-шифрования (требуется обратный прокси для шифрования транспорта):
 
