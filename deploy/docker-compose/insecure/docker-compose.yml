@@ -8,8 +8,8 @@ services:
       - "11211"
 
   yopass:
-    image: Khovanskiy5/yopass
+    image: khovanskiy5/yopass:latest
     restart: always
     ports:
-      - "127.0.0.1:80:80"
-    command: "--memcached=memcached:11211 --port 80"
+      - "80:1337"
+    command: "--memcached=memcached:11211"

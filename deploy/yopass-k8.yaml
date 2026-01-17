@@ -14,16 +14,28 @@ spec:
     spec:
       containers:
         - name: yopass
-          image: Khovanskiy5/yopass
+          image: khovanskiy5/yopass:latest
           args:
             - "--memcached=localhost:11211"
           ports:
             - name: http
               containerPort: 1337
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
           resources:
             limits:
-              cpu: 100m
-              memory: 50Mi
+              cpu: 200m
+              memory: 100Mi
             requests:
               cpu: 100m
               memory: 50Mi

@@ -1,0 +1,11 @@
+.git
+.github
+website/node_modules
+node_modules
+yopass
+yopass-server
+*.db
+.env
+.idea
+.vscode
+vendor/
