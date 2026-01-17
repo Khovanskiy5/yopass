@@ -196,7 +196,7 @@ docker-compose up -d
 ```console
 docker run --name memcached_yopass -d memcached
 docker run -p 443:1337 -v /local/certs/:/certs \
-    --link memcached_yopass:memcached -d Khovanskiy5/yopass \
+    --link memcached_yopass:memcached -d khovanskiy5/yopass \
     --memcached=memcached:11211 --tls-key=/certs/tls.key --tls-cert=/certs/tls.crt
 ```
 
@@ -204,7 +204,7 @@ docker run -p 443:1337 -v /local/certs/:/certs \
 
 ```console
 docker run --name redis_yopass -d redis
-docker run -p 443:1337 --link redis_yopass:redis -d Khovanskiy5/yopass \
+docker run -p 443:1337 --link redis_yopass:redis -d khovanskiy5/yopass \
     --database redis --redis redis://redis:6379/0
 ```
 
@@ -212,7 +212,7 @@ docker run -p 443:1337 --link redis_yopass:redis -d Khovanskiy5/yopass \
 
 ```console
 docker run --name memcached_yopass -d memcached
-docker run -p 127.0.0.1:80:1337 --link memcached_yopass:memcached -d Khovanskiy5/yopass --memcached=memcached:11211
+docker run -p 127.0.0.1:80:1337 --link memcached_yopass:memcached -d khovanskiy5/yopass --memcached=memcached:11211
 ```
 
 Затем направьте ваш обратный прокси, обрабатывающий TLS-соединения, на `127.0.0.1:80`.

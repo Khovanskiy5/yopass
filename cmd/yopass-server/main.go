@@ -14,6 +14,7 @@ import (
 	"github.com/Khovanskiy5/yopass/internal/secret/service"
 	"github.com/Khovanskiy5/yopass/internal/server"
 	"github.com/Khovanskiy5/yopass/internal/utils"
+	"github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/zap"
 )
 
@@ -28,10 +29,19 @@ func main() {
 	logger := utils.NewLogger()
 	registry := utils.NewRegistry()
 
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+
+	if err := run(ctx, cfg, logger, registry); err != nil {
+		logger.Fatal("server error", zap.Error(err))
+	}
+}
+
+func run(ctx context.Context, cfg *config.Config, logger *zap.Logger, registry *prometheus.Registry) error {
 	// 3. Setup repository
 	repo, err := repository.NewRepository(cfg, logger)
 	if err != nil {
-		logger.Fatal("failed to setup repository", zap.Error(err))
+		return err
 	}
 
 	// 4. Setup business logic
@@ -58,15 +68,14 @@ func main() {
 	apiSrv := srvManager.Start(router)
 	metricsSrv := srvManager.StartMetrics()
 
-	// 8. Wait for termination signal
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	sig := <-quit
-	logger.Info("Shutting down servers", zap.String("signal", sig.String()))
+	// 8. Wait for termination signal or context cancellation
+	<-ctx.Done()
+	logger.Info("Shutting down servers")
 
 	// 9. Graceful shutdown
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
-	srvManager.Shutdown(ctx, apiSrv, metricsSrv)
+	srvManager.Shutdown(shutdownCtx, apiSrv, metricsSrv)
 	logger.Info("Server gracefully stopped")
+	return nil
 }

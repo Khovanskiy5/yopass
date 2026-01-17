@@ -12,8 +12,11 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/Khovanskiy5/yopass/pkg/server"
-	"github.com/Khovanskiy5/yopass/pkg/yopass"
+	"github.com/Khovanskiy5/yopass/internal/config"
+	"github.com/Khovanskiy5/yopass/internal/secret/domain"
+	"github.com/Khovanskiy5/yopass/internal/secret/handler"
+	"github.com/Khovanskiy5/yopass/internal/secret/service"
+	"github.com/Khovanskiy5/yopass/internal/server"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -30,17 +33,29 @@ func main() {
 
 	logger := configureZapLogger(zapcore.InfoLevel)
 	registry := prometheus.NewRegistry()
-	y := &server.Server{
-		DB:                  NewDynamo(os.Getenv("TABLE_NAME")),
+
+	cfg := &config.Config{
 		MaxLength:           viper.GetInt("max-length"),
-		Registry:            registry,
+		PrefetchSecret:      viper.GetBool("prefetch-secret"),
+		CORSAllowOrigin:     viper.GetString("cors-allow-origin"),
 		ForceOneTimeSecrets: viper.GetBool("force-onetime-secrets"),
-		Logger:              logger,
 	}
 
-	algnhsa.ListenAndServe(
-		y.HTTPHandler(),
-		nil)
+	repo := NewDynamo(os.Getenv("TABLE_NAME"))
+	
+	secretService := service.NewSecretService(
+		repo,
+		cfg.MaxLength,
+		cfg.ForceOneTimeSecrets,
+		[]int32{3600, 86400, 604800},
+	)
+
+	secretHandler := handler.NewSecretHandler(secretService, logger)
+	configHandler := handler.NewConfigHandler(cfg, logger)
+
+	router := server.NewRouter(cfg, secretHandler, configHandler, registry)
+
+	algnhsa.ListenAndServe(router, nil)
 }
 
 // Dynamo Database implementation
@@ -50,14 +65,14 @@ type Dynamo struct {
 }
 
 // NewDynamo returns a database client
-func NewDynamo(tableName string) server.Database {
+func NewDynamo(tableName string) domain.Repository {
 	sess, _ := session.NewSession()
 	return &Dynamo{tableName: tableName, svc: dynamodb.New(sess)}
 }
 
 // Get item from dynamo
-func (d *Dynamo) Get(key string) (yopass.Secret, error) {
-	var s yopass.Secret
+func (d *Dynamo) Get(key string) (domain.Secret, error) {
+	var s domain.Secret
 	input := &dynamodb.GetItemInput{
 		Key: map[string]*dynamodb.AttributeValue{
 			"id": {
@@ -71,7 +86,7 @@ func (d *Dynamo) Get(key string) (yopass.Secret, error) {
 		return s, err
 	}
 	if len(result.Item) == 0 {
-		return s, fmt.Errorf("Key not found in database")
+		return s, domain.ErrNotFound
 	}
 
 	if *result.Item["one_time"].BOOL {
@@ -111,7 +126,7 @@ func (d *Dynamo) deleteItem(key string) error {
 }
 
 // Put item in Dynamo
-func (d *Dynamo) Put(key string, secret yopass.Secret) error {
+func (d *Dynamo) Put(key string, secret domain.Secret) error {
 	input := &dynamodb.PutItemInput{
 		// TABLE GENERATED NAME
 		Item: map[string]*dynamodb.AttributeValue{
@@ -152,7 +167,7 @@ func (d *Dynamo) Status(key string) (bool, error) {
 		return false, err
 	}
 	if len(result.Item) == 0 {
-		return false, fmt.Errorf("Key not found in database")
+		return false, domain.ErrNotFound
 	}
 
 	oneTime := *result.Item["one_time"].BOOL

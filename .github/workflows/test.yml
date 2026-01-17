@@ -1,6 +1,12 @@
 name: Test
 # yamllint disable-line rule:truthy
-on: [pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 jobs:
   go:
     name: Go Test
@@ -19,11 +25,13 @@ jobs:
       REDIS_URL: "redis://localhost:6379/0"
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v3
-        id: go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache: true
 
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Go Test
         run: |
@@ -31,7 +39,7 @@ jobs:
           go test ./... -race -coverprofile=coverage.txt -covermode=atomic -v
 
       - name: codecov upload
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
   node:
@@ -45,7 +53,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
           cache: "yarn"
           cache-dependency-path: website/yarn.lock
 
