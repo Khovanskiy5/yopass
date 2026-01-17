@@ -8,7 +8,7 @@ import (
 )
 
 // NewMemcached returns a new memcached database client
-func NewMemcached(server string) Database {
+func NewMemcached(server string) yopass.Repository {
 	return &Memcached{memcache.New(server)}
 }
 

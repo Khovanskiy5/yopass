@@ -1,6 +1,6 @@
 ![Yopass-horizontal](https://user-images.githubusercontent.com/37777956/59544367-0867aa80-8f09-11e9-8d6a-02008e1bccc7.png)
 
-# Yopass - Share Secrets Securely
+# Yopass — Безопасный обмен секретами
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/jhaals/yopass)](https://goreportcard.com/report/github.com/jhaals/yopass)
 [![codecov](https://codecov.io/gh/jhaals/yopass/branch/master/graph/badge.svg)](https://codecov.io/gh/jhaals/yopass)
@@ -8,35 +8,36 @@
 
 ![demo](https://ydemo.netlify.com/yopass-demo.gif)
 
-Yopass is a project for sharing secrets in a quick and secure manner.
-The sole purpose of Yopass is to minimize passwords floating around in ticket management systems, Slack messages, and emails. Messages are encrypted/decrypted locally in the browser and sent to Yopass without the decryption key, which is only visible once during encryption. Yopass then returns a one-time URL with a specified expiry date.
+Yopass — это проект для быстрого и безопасного обмена конфиденциальной информацией (секретами).
 
-There is no perfect way of sharing secrets online, and there is a trade-off in every implementation. Yopass is designed to be as simple and "dumb" as possible without compromising security. There's no mapping between the generated UUID and the user who submitted the encrypted message. It's always best to send all context except the password over another channel.
+Основная цель Yopass — свести к минимуму передачу паролей через системы управления тикетами, сообщения в Slack и электронную почту. Сообщения шифруются/дешифруются локально в браузере и отправляются в Yopass без ключа расшифровки, который виден только один раз в процессе шифрования. Затем Yopass возвращает одноразовую ссылку с указанным сроком действия.
 
-**[Demo available here](https://yopass.se)**. It's recommended to host yopass yourself if you care about security.
+Не существует идеального способа передачи секретов в интернете, и в каждой реализации есть свои компромиссы. Yopass спроектирован так, чтобы быть максимально простым и «глупым» без ущерба для безопасности. Между сгенерированным UUID и пользователем, отправившим зашифрованное сообщение, нет никакой связи. Всегда лучше отправлять весь контекст, за исключением самого пароля, по другому каналу связи.
 
-- End-to-End encryption using [OpenPGP](https://openpgpjs.org/)
-- Secrets can only be viewed once
-- No accounts or user management required
-- Secrets self destruct after X hours
-- Custom password option
-- Limited file upload functionality
+**[Демо-версия доступна здесь](https://yopass.se)**. Если вы заботитесь о безопасности, рекомендуется развернуть Yopass самостоятельно.
 
-## History
+- Сквозное (End-to-End) шифрование с использованием [OpenPGP](https://openpgpjs.org/)
+- Секреты можно просмотреть только один раз
+- Не требуются учетные записи или управление пользователями
+- Секреты самоуничтожаются через X часов
+- Возможность установки пользовательского пароля
+- Ограниченная функциональность загрузки файлов
 
-Yopass was first released in 2014 and has since been maintained by me and contributed to by this fantastic group of [contributors](https://github.com/jhaals/yopass/graphs/contributors). Yopass is used by many large corporations, some of which are listed below.
+## История
 
-If you are using Yopass and want to support the project beyond code contributions, you can give thanks via email, consider donating, or give consent to list your company name as a user of Yopass in this readme.
+Yopass был впервые выпущен в 2014 году и с тех пор поддерживается мной при участии этой фантастической группы [контрибьюторов](https://github.com/jhaals/yopass/graphs/contributors). Yopass используется многими крупными корпорациями, некоторые из которых перечислены ниже.
 
-## Trusted by
+Если вы используете Yopass и хотите поддержать проект помимо вклада в код, вы можете выразить благодарность по электронной почте, сделать пожертвование или дать согласие на указание названия вашей компании в качестве пользователя Yopass в этом файле.
+
+## Нам доверяют
 
 - [Doddle LTD](https://doddle.com)
 - [Spotify](https://spotify.com)
 - [Gumtree Australia](https://www.gumtreeforbusiness.com.au/)
 
-## Command-line interface
+## Интерфейс командной строки
 
-The main motivation of Yopass is to make it easy for everyone to share secrets quickly via a simple web interface. A command-line interface is also provided to support use cases where program output needs to be shared.
+Основная идея Yopass заключается в том, чтобы каждый мог легко и быстро делиться секретами через простой веб-интерфейс. Также предоставляется интерфейс командной строки (CLI) для случаев, когда необходимо поделиться выводом программы.
 
 ```console
 $ yopass --help
@@ -56,40 +57,40 @@ Settings are read from flags, environment variables, or a config file located at
 variables have to be prefixed with YOPASS_ and dashes become underscores.
 
 Examples:
-      # Encrypt and share secret from stdin
+      # Зашифровать и отправить секрет из stdin
       printf 'secret message' | yopass
 
-      # Encrypt and share secret file
+      # Зашифровать и отправить файл с секретом
       yopass --file /path/to/secret.conf
 
-      # Share secret multiple time a whole day
+      # Делиться секретом несколько раз в течение всего дня
       cat secret-notes.md | yopass --expiration=1d --one-time=false
 
-      # Decrypt secret to stdout
+      # Расшифровать секрет в stdout
       yopass --decrypt https://yopass.se/#/...
 
 Website: https://yopass.se
 ```
 
-The following options are currently available to install the CLI locally.
+На данный момент доступны следующие варианты локальной установки CLI:
 
-- Compile from source (requires Go >= v1.21)
+- Компиляция из исходного кода (требуется Go >= v1.21)
 
   ```console
   go install github.com/jhaals/yopass/cmd/yopass@latest
   ```
 
-## Installation / Configuration
+## Установка / Конфигурация
 
-Here are the server configuration options.
+Параметры конфигурации сервера:
 
-Command line flags:
+Флаги командной строки:
 
 ```console
 $ yopass-server -h
       --address string             listen address (default 0.0.0.0)
       --database string            database backend ('memcached' or 'redis') (default "memcached")
-      --max-length int             max length of encrypted secret (default 10000)
+      --max-length int             max length of encrypted secret (default 5242880)
       --memcached string           Memcached address (default "localhost:11211")
       --metrics-port int           metrics server listen port (default -1)
       --port int                   listen port (default 1337)
@@ -107,62 +108,62 @@ $ yopass-server -h
       --imprint-url string         URL to imprint/legal notice page
 ```
 
-Encrypted secrets can be stored either in Memcached or Redis by changing the `--database` flag.
+Зашифрованные секреты могут храниться в Memcached или Redis путем изменения флага `--database`.
 
-### Proxy Configuration
+### Настройка прокси
 
-When Yopass is deployed behind a reverse proxy or load balancer (such as Nginx, Caddy, Cloudflare, or AWS ALB), you may want to log the real client IP addresses instead of the proxy's IP. Yopass supports trusted proxy configuration for secure handling of `X-Forwarded-For` headers.
+Когда Yopass развернут за обратным прокси-сервером или балансировщиком нагрузки (таким как Nginx, Caddy, Cloudflare или AWS ALB), вы можете захотеть логировать реальные IP-адреса клиентов вместо IP-адреса прокси. Yopass поддерживает настройку доверенных прокси для безопасной обработки заголовков `X-Forwarded-For`.
 
-**Security Note**: X-Forwarded-For headers are only trusted when requests come from explicitly configured trusted proxies. This prevents IP spoofing from untrusted sources.
+**Примечание по безопасности**: Заголовки X-Forwarded-For считаются доверенными только в том случае, если запросы поступают от явно настроенных доверенных прокси. Это предотвращает подмену IP-адресов из ненадежных источников.
 
-#### Examples:
+#### Примеры:
 
 ```bash
-# Trust a single proxy IP
+# Доверять одному IP-адресу прокси
 yopass-server --trusted-proxies 192.168.1.100
 
-# Trust multiple proxy IPs
+# Доверять нескольким IP-адресам прокси
 yopass-server --trusted-proxies 192.168.1.100,10.0.0.50
 
-# Trust proxy subnets (CIDR notation)
+# Доверять подсетям прокси (нотация CIDR)
 yopass-server --trusted-proxies 192.168.1.0/24,10.0.0.0/8
 
-# Environment variable (useful for Docker)
+# Переменная окружения (полезно для Docker)
 export TRUSTED_PROXIES="192.168.1.0/24,10.0.0.0/8"
 yopass-server
 ```
 
-#### Common Proxy Scenarios:
+#### Типичные сценарии использования прокси:
 
-- **Nginx/Apache**: Use the IP address of your reverse proxy server
-- **Cloudflare**: Use Cloudflare's IP ranges (available from their documentation)
-- **AWS ALB/ELB**: Use your VPC's CIDR block or the load balancer's subnet
-- **Docker networks**: Use the Docker network's gateway IP or subnet
+- **Nginx/Apache**: Используйте IP-адрес вашего сервера обратного прокси.
+- **Cloudflare**: Используйте диапазоны IP-адресов Cloudflare (доступны в их документации).
+- **AWS ALB/ELB**: Используйте блок CIDR вашей VPC или подсеть балансировщика нагрузки.
+- **Docker networks**: Используйте IP-адрес шлюза или подсеть сети Docker.
 
-Without trusted proxies configured, Yopass will always use the direct connection IP for security, which is the recommended default behavior.
+Без настройки доверенных прокси Yopass в целях безопасности всегда будет использовать IP-адрес прямого подключения, что является рекомендуемым поведением по умолчанию.
 
 ### Docker Compose
 
-Use the Docker Compose file `deploy/with-nginx-proxy-and-letsencrypt/docker-compose.yml` to set up a Yopass instance with TLS transport encryption and automatic certificate renewal using [Let's Encrypt](https://letsencrypt.org/). First, point your domain to the host where you want to run Yopass. Then replace the placeholder values for `VIRTUAL_HOST`, `LETSENCRYPT_HOST`, and `LETSENCRYPT_EMAIL` in the docker-compose.yml file with your values. Change to the deployment directory and start the containers:
+Используйте файл Docker Compose `deploy/with-nginx-proxy-and-letsencrypt/docker-compose.yml` для настройки экземпляра Yopass с шифрованием транспорта TLS и автоматическим продлением сертификатов с помощью [Let's Encrypt](https://letsencrypt.org/). Сначала направьте свой домен на хост, где вы хотите запустить Yopass. Затем замените значения-заполнители для `VIRTUAL_HOST`, `LETSENCRYPT_HOST` и `LETSENCRYPT_EMAIL` в файле docker-compose.yml вашими значениями. Перейдите в каталог развертывания и запустите контейнеры:
 
 ```console
 docker-compose up -d
 ```
 
-Yopass will then be available under the domain you specified through `VIRTUAL_HOST` / `LETSENCRYPT_HOST`.
+После этого Yopass будет доступен по домену, который вы указали в `VIRTUAL_HOST` / `LETSENCRYPT_HOST`.
 
-Advanced users who already have a reverse proxy handling TLS connections can use the `insecure` setup:
+Продвинутые пользователи, у которых уже есть обратный прокси-сервер, обрабатывающий TLS-соединения, могут использовать «небезопасную» (insecure) настройку:
 
 ```console
 cd deploy/docker-compose/insecure
 docker-compose up -d
 ```
 
-Then point your reverse proxy to `127.0.0.1:80`.
+Затем направьте ваш обратный прокси на `127.0.0.1:80`.
 
 ### Docker
 
-With TLS encryption
+С TLS-шифрованием:
 
 ```console
 docker run --name memcached_yopass -d memcached
@@ -170,16 +171,16 @@ docker run -p 443:1337 -v /local/certs/:/certs \
     --link memcached_yopass:memcached -d jhaals/yopass --memcached=memcached:11211 --tls-key=/certs/tls.key --tls-cert=/certs/tls.crt
 ```
 
-Yopass will then be available on port 443 through all IP addresses of the host, including public ones. To limit availability to a specific IP address, use `-p 127.0.0.1:443:1337`.
+После этого Yopass будет доступен на порту 443 через все IP-адреса хоста, включая публичные. Чтобы ограничить доступ конкретным IP-адресом, используйте `-p 127.0.0.1:443:1337`.
 
-Without TLS encryption (needs a reverse proxy for transport encryption):
+Без TLS-шифрования (требуется обратный прокси для шифрования транспорта):
 
 ```console
 docker run --name memcached_yopass -d memcached
 docker run -p 127.0.0.1:80:1337 --link memcached_yopass:memcached -d jhaals/yopass --memcached=memcached:11211
 ```
 
-Then point your reverse proxy that handles TLS connections to `127.0.0.1:80`.
+Затем направьте ваш обратный прокси, обрабатывающий TLS-соединения, на `127.0.0.1:80`.
 
 ### Kubernetes
 
@@ -188,24 +189,22 @@ kubectl apply -f deploy/yopass-k8.yaml
 kubectl port-forward service/yopass 1337:1337
 ```
 
-_This is meant to get you started, please configure TLS when running yopass for real._
+_Это предназначено для ознакомления, пожалуйста, настройте TLS при реальном использовании Yopass._
 
-## Monitoring
+## Мониторинг
 
-Yopass optionally provides metrics in the [OpenMetrics][] / [Prometheus][] text
-format. Use flag `--metrics-port <port>` to let Yopass start a second HTTP
-server on that port making the metrics available on path `/metrics`.
+Yopass может опционально предоставлять метрики в текстовом формате [OpenMetrics][] / [Prometheus][]. Используйте флаг `--metrics-port <port>`, чтобы Yopass запустил второй HTTP-сервер на этом порту, делая метрики доступными по пути `/metrics`.
 
-Supported metrics:
+Поддерживаемые метрики:
 
-- Basic [process metrics][] with prefix `process_` (e.g. CPU, memory, and file descriptor usage)
-- Go runtime metrics with prefix `go_` (e.g. Go memory usage, garbage collection statistics, etc.)
-- HTTP request metrics with prefix `yopass_http_` (HTTP request counter, and HTTP request latency histogram)
+- Базовые [метрики процесса][process metrics] с префиксом `process_` (например, использование процессора, памяти и дескрипторов файлов)
+- Метрики среды выполнения Go с префиксом `go_` (например, использование памяти Go, статистика сборки мусора и т. д.)
+- Метрики HTTP-запросов с префиксом `yopass_http_` (счетчик HTTP-запросов и гистограмма задержки HTTP-запросов)
 
 [openmetrics]: https://openmetrics.io/
 [prometheus]: https://prometheus.io/
 [process metrics]: https://prometheus.io/docs/instrumenting/writing_clientlibs/#process-metrics
 
-## Translations
+## Переводы
 
-Yopass accepts translations for additional languages. The frontend includes internationalization support using react-i18next, see [current translations](https://github.com/jhaals/yopass/blob/master/website/src/shared/lib/i18n.ts). Translation contributions are welcome via pull requests, see example [here](https://github.com/jhaals/yopass/pull/3024) for adding a new language.
+Yopass принимает переводы на дополнительные языки. Фронтенд поддерживает интернационализацию с использованием react-i18next, см. [текущие переводы](https://github.com/jhaals/yopass/blob/master/website/src/shared/lib/i18n.ts). Вклады в перевод приветствуются через pull requests, см. пример [здесь](https://github.com/jhaals/yopass/pull/3024) для добавления нового языка.

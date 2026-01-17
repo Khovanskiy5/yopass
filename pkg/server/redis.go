@@ -10,7 +10,7 @@ import (
 )
 
 // NewRedis returns a new Redis database client
-func NewRedis(url string) (Database, error) {
+func NewRedis(url string) (yopass.Repository, error) {
 	options, err := redis.ParseURL(url)
 	if err != nil {
 		return nil, err

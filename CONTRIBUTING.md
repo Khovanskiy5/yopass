@@ -1,304 +1,303 @@
-# How to contribute to Yopass
+# Как внести свой вклад в Yopass
 
-First of all, thank you for taking the time to contribute to Yopass! 🎉
+Прежде всего, спасибо за то, что нашли время помочь проекту Yopass! 🎉
 
-## Getting Started
+## С чего начать
 
-### Prerequisites
+### Требования
 
-**Backend Development (Go):**
+**Разработка бэкенда (Go):**
 - Go 1.21+
-- Redis or Memcached for storage
+- Redis или Memcached для хранения
 - Git
 
-**Frontend Development (React/TypeScript):**
+**Разработка фронтенда (React/TypeScript):**
 - Node.js 18+
 - Yarn package manager
-- Modern browser for testing
+- Современный браузер для тестирования
 
-### Local Development Setup
+### Локальная настройка для разработки
 
-1. **Clone the repository:**
+1. **Клонируйте репозиторий:**
    ```bash
    git clone https://github.com/jhaals/yopass.git
    cd yopass
    ```
 
-2. **Backend setup:**
+2. **Настройка бэкенда:**
    ```bash
-   # Start Redis (for development)
+   # Запустите Redis (для разработки)
    docker run -d -p 6379:6379 redis:alpine
 
-   # Run the server
+   # Запустите сервер
    go run cmd/yopass-server/main.go --redis=redis://localhost:6379/0
    ```
 
-3. **Frontend setup:**
+3. **Настройка фронтенда:**
    ```bash
    cd website/
    yarn install
-   yarn dev  # Starts development server on http://localhost:3000
+   yarn dev  # Запускает сервер разработки на http://localhost:3000
    ```
 
-## Development Workflow
+## Процесс разработки
 
-### Code Quality & Linting
+### Качество кода и линтинг
 
-We maintain high code quality standards with automated linting and formatting:
+Мы поддерживаем высокие стандарты качества кода с помощью автоматического линтинга и форматирования:
 
-**Frontend (TypeScript/React):**
+**Фронтенд (TypeScript/React):**
 ```bash
 cd website/
 
-# Lint and check formatting
+# Проверка линтером и форматирования
 yarn lint
 
-# Auto-fix linting issues and format code
+# Автоматическое исправление проблем линтинга и форматирование кода
 yarn format
 
-# Type checking
-yarn build  # Includes TypeScript compilation
+# Проверка типов
+yarn build  # Включает компиляцию TypeScript
 ```
 
-**Backend (Go):**
+**Бэкенд (Go):**
 ```bash
-# Format code
+# Форматирование кода
 go fmt ./...
 
-# Lint (install golangci-lint first)
+# Линтинг (сначала установите golangci-lint)
 golangci-lint run
 
-# Vet code
+# Статический анализ (vet)
 go vet ./...
 ```
 
-### Code Style Guidelines
+### Рекомендации по стилю кода
 
-**Frontend:**
-- Use function declarations instead of arrow functions (`function foo() {}` not `const foo = () => {}`)
-- TypeScript strict mode enabled
-- Prettier for code formatting
-- ESLint for code quality
-- No React.FC usage - prefer function declarations
+**Фронтенд:**
+- Используйте объявление функций вместо стрелочных функций (`function foo() {}`, а не `const foo = () => {}`)
+- Включен строгий режим TypeScript
+- Prettier для форматирования кода
+- ESLint для контроля качества кода
+- Не используйте React.FC — отдавайте предпочтение обычному объявлению функций
 
-**Backend:**
-- Standard Go formatting with `gofmt`
-- Follow Go best practices and idioms
-- Use meaningful variable and function names
-- Include comprehensive error handling
+**Бэкенд:**
+- Стандартное форматирование Go с помощью `gofmt`
+- Следуйте лучшим практикам и идиомам Go
+- Используйте осмысленные имена переменных и функций
+- Включайте исчерпывающую обработку ошибок
 
-### Testing
+### Тестирование
 
-Testing is mandatory for all contributions. We use a hybrid testing approach:
+Тестирование обязательно для всех вкладов. Мы используем гибридный подход:
 
-**Frontend Testing:**
+**Тестирование фронтенда:**
 ```bash
 cd website/
 
-# Run end-to-end tests
+# Запуск сквозных (E2E) тестов
 yarn test
-
 ```
 
-**Backend Testing:**
+**Тестирование бэкенда:**
 ```bash
-# Run all tests
+# Запуск всех тестов
 go test ./...
 
-# Run tests with coverage
+# Запуск тестов с проверкой покрытия
 go test -cover ./...
 
-# Run specific package tests
+# Запуск тестов для конкретного пакета
 go test ./pkg/server/...
 ```
 
-**Test Requirements:**
-- **Unit tests** for all utility functions and business logic
-- **Integration tests** for API endpoints
-- **End-to-end tests** for complete user workflows
-- **100% coverage** required for security-critical functions (crypto, random generation)
-- **95%+ coverage** target for API layers
+**Требования к тестам:**
+- **Юнит-тесты** для всех вспомогательных функций и бизнес-логики
+- **Интеграционные тесты** для эндпоинтов API
+- **Сквозные тесты (E2E)** для полных пользовательских сценариев
+- **100% покрытие** обязательно для критически важных для безопасности функций (криптография, генерация случайных чисел)
+- **Целевое покрытие 95%+** для слоев API
 
-## I found a bug
+## Я нашел ошибку
 
-Please submit an issue with a detailed description and as much relevant information as possible:
+Пожалуйста, создайте issue с подробным описанием и максимально возможным количеством соответствующей информации:
 
-**For Backend Issues:**
-- Go version
-- Operating system
-- Database backend (Redis/Memcached version)
-- Server configuration
-- Log output (if available)
+**Для проблем с бэкендом:**
+- Версия Go
+- Операционная система
+- База данных (версия Redis/Memcached)
+- Конфигурация сервера
+- Логи (если есть)
 
-**For Frontend Issues:**
-- Browser name and version
-- Operating system
-- Console errors (F12 Developer Tools)
-- Steps to reproduce
-- Expected vs actual behavior
+**Для проблем с фронтендом:**
+- Название и версия браузера
+- Операционная система
+- Ошибки в консоли (инструменты разработчика F12)
+- Шаги для воспроизведения
+- Ожидаемое и фактическое поведение
 
-**Security Issues:**
-Please report security vulnerabilities privately by emailing the maintainers rather than opening a public issue.
+**Проблемы безопасности:**
+Пожалуйста, сообщайте об уязвимостях приватно по электронной почте мейнтейнерам, а не через публичные issue.
 
-## Pull Requests and Features
+## Pull Requests и новые функции
 
-### Before Submitting
+### Перед отправкой
 
-1. **Discuss larger changes** in an issue before implementing
-2. **Smaller tweaks** and bug fixes don't need prior discussion
-3. **Check existing issues** to avoid duplicate work
-4. **Follow the code style** outlined above
+1. **Обсудите крупные изменения** в issue перед реализацией
+2. **Небольшие правки** и исправления ошибок не требуют предварительного обсуждения
+3. **Проверьте существующие issue**, чтобы избежать дублирования работы
+4. **Следуйте стилю кода**, описанному выше
 
-### PR Requirements
+### Требования к PR
 
-- [ ] **Tests included** - All changes must have appropriate tests
-- [ ] **Linting passes** - `yarn lint` (frontend) and `golangci-lint run` (backend)
-- [ ] **Tests pass** - Both unit and integration tests
-- [ ] **Documentation updated** - Update relevant docs if needed
-- [ ] **Security reviewed** - Consider security implications of changes
+- [ ] **Тесты включены** — все изменения должны сопровождаться соответствующими тестами
+- [ ] **Линтинг пройден** — `yarn lint` (фронтенд) и `golangci-lint run` (бэкенд)
+- [ ] **Тесты проходят** — как юнит, так и интеграционные тесты
+- [ ] **Документация обновлена** — обновите соответствующие документы при необходимости
+- [ ] **Проверка безопасности** — оцените влияние изменений на безопасность
 
-### PR Description Template
+### Шаблон описания PR
 
 ```markdown
-## Description
-Brief description of changes and why they're needed.
+## Описание
+Краткое описание изменений и причин, по которым они необходимы.
 
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
+## Тип изменений
+- [ ] Исправление ошибки (bug fix)
+- [ ] Новая функция
+- [ ] Критическое изменение (breaking change)
+- [ ] Обновление документации
 
-## Testing
-- [ ] Unit tests added/updated
-- [ ] Integration tests added/updated
-- [ ] E2E tests added/updated
-- [ ] Manual testing completed
+## Тестирование
+- [ ] Добавлены/обновлены юнит-тесты
+- [ ] Добавлены/обновлены интеграционные тесты
+- [ ] Добавлены/обновлены E2E-тесты
+- [ ] Выполнено ручное тестирование
 
-## Security Considerations
-Describe any security implications and how they've been addressed.
+## Соображения безопасности
+Опишите любые последствия для безопасности и то, как они были учтены.
 
-## Checklist
-- [ ] Code follows project style guidelines
-- [ ] Self-review completed
-- [ ] Tests pass locally
-- [ ] Documentation updated
+## Контрольный список
+- [ ] Код соответствует рекомендациям проекта по стилю
+- [ ] Выполнена самопроверка
+- [ ] Тесты проходят локально
+- [ ] Документация обновлена
 ```
 
-### Commit Message Guidelines
+### Рекомендации по сообщениям коммитов
 
-Use clear, descriptive commit messages:
+Используйте четкие и информативные сообщения:
 
 ```bash
-# Good examples
+# Хорошие примеры
 Add streaming upload support for large files
 Fix one-time secret enforcement in upload flow
 Update README with new deployment options
 
-# Avoid
+# Плохие примеры (избегайте их)
 Fix bug
 Update code
 WIP
 ```
 
-## Development Guidelines
+## Руководство по разработке
 
-### Frontend Architecture
+### Архитектура фронтенда
 
-The frontend follows a modern React architecture:
+Фронтенд следует современной архитектуре React:
 
 ```
 src/
-├── app/           # Main application setup
-├── features/      # Feature-based components
-├── shared/        # Reusable utilities and components
-│   ├── components/  # UI components
-│   ├── hooks/       # Custom React hooks
-│   ├── lib/         # Utility functions
-│   └── types/       # TypeScript type definitions
-└── tests/         # Test utilities
+├── app/           # Основная настройка приложения
+├── features/      # Компоненты на основе функциональности (фич)
+├── shared/        # Общие утилиты и компоненты
+│   ├── components/  # Компоненты пользовательского интерфейса
+│   ├── hooks/       # Пользовательские хуки React
+│   ├── lib/         # Вспомогательные функции
+│   └── types/       # Определения типов TypeScript
+└── tests/         # Утилиты для тестирования
 ```
 
-### Backend Architecture
+### Архитектура бэкенда
 
-The backend uses a clean architecture pattern:
+Бэкенд использует паттерн чистой архитектуры:
 
 ```
-cmd/               # CLI applications
+cmd/               # CLI-приложения
 pkg/
-├── server/        # HTTP server and routing
-├── yopass/        # Core business logic
-└── ...           # Other packages
+├── server/        # HTTP-сервер и маршрутизация
+├── yopass/        # Основная бизнес-логика
+└── ...           # Другие пакеты
 ```
 
-### Adding New Features
+### Добавление новых функций
 
-1. **Security First**: Consider security implications of all changes
-2. **Test-Driven Development**: Write tests before implementation
-3. **Documentation**: Update relevant documentation
-4. **Configuration**: Make features configurable when appropriate
-5. **Backward Compatibility**: Maintain API compatibility unless it's a breaking change
+1. **Безопасность прежде всего**: Учитывайте влияние всех изменений на безопасность
+2. **Разработка через тестирование (TDD)**: Пишите тесты перед реализацией
+3. **Документация**: Обновляйте соответствующую документацию
+4. **Конфигурация**: Делайте функции настраиваемыми, где это уместно
+5. **Обратная совместимость**: Сохраняйте совместимость API, если это не критическое изменение
 
-### Performance Considerations
+### Соображения производительности
 
-- **Frontend**: Use React best practices, avoid unnecessary re-renders
-- **Backend**: Consider memory usage and CPU efficiency
-- **Crypto**: Ensure cryptographic operations are performed client-side
-- **Streaming**: Use streaming for large file uploads/downloads
+- **Фронтенд**: Используйте лучшие практики React, избегайте ненужных повторных рендеров
+- **Бэкенд**: Учитывайте использование памяти и эффективность процессора
+- **Криптография**: Убедитесь, что криптографические операции выполняются на стороне клиента
+- **Стриминг**: Используйте потоковую передачу для загрузки/скачивания больших файлов
 
-## I want to help out
+## Я хочу помочь
 
-Fantastic! Here are ways to contribute:
+Потрясающе! Вот способы внести свой вклад:
 
-### Good First Issues
-Look for issues tagged with:
-- `good first issue` - Perfect for newcomers
-- `help wanted` - Ready to be picked up
-- `documentation` - Improve docs and guides
+### Задачи для новичков (Good First Issues)
+Ищите задачи с метками:
+- `good first issue` — идеально для новичков
+- `help wanted` — готово к работе
+- `documentation` — улучшение документации и руководств
 
-### Areas That Need Help
-- **Documentation improvements** - Always welcome
-- **Test coverage** - Expand test suites
-- **Accessibility** - Improve a11y compliance
-- **Internationalization** - Add new language translations
-- **Performance** - Optimize critical paths
-- **Security** - Security audits and improvements
+### Области, требующие помощи
+- **Улучшение документации** — всегда приветствуется
+- **Покрытие тестами** — расширение наборов тестов
+- **Доступность (a11y)** — улучшение соответствия стандартам доступности
+- **Интернационализация** — добавление новых переводов
+- **Производительность** — оптимизация критических путей
+- **Безопасность** — аудит и улучшения безопасности
 
-## I need installation help
+## Мне нужна помощь с установкой
 
-Yopass is designed to be easy to deploy:
+Yopass спроектирован так, чтобы его было легко развернуть:
 
-### Docker Deployment (Recommended)
+### Развертывание через Docker (рекомендуется)
 ```bash
-# Basic setup with docker-compose
+# Базовая настройка с docker-compose
 cd deploy/
 docker-compose up -d
 ```
 
-### Manual Installation
-For custom setups, refer to:
-- [README.md](README.md) - Complete installation guide
-- [deploy/](deploy/) - Example configurations
-- [Documentation](https://yopass.se) - Detailed deployment guides
+### Ручная установка
+Для индивидуальной настройки обратитесь к:
+- [README.md](README.md) — полное руководство по установке
+- [deploy/](deploy/) — примеры конфигураций
+- [Документация](https://yopass.se) — подробные руководства по развертыванию
 
-### Getting Help
-- Check existing [GitHub issues](https://github.com/jhaals/yopass/issues)
-- Read the [documentation](https://yopass.se)
-- Ask questions in GitHub discussions
+### Получение помощи
+- Проверьте существующие [GitHub issues](https://github.com/jhaals/yopass/issues)
+- Читайте [документацию](https://yopass.se)
+- Задавайте вопросы в обсуждениях GitHub (Discussions)
 
-## Code of Conduct
+## Кодекс поведения
 
-- Be respectful and inclusive
-- Focus on constructive feedback
-- Help create a welcoming environment for all contributors
-- Follow the [GitHub Community Guidelines](https://docs.github.com/en/site-policy/github-terms/github-community-guidelines)
+- Будьте уважительны и терпимы
+- Сосредоточьтесь на конструктивной обратной связи
+- Помогайте создавать благоприятную атмосферу для всех участников
+- Следуйте [правилам сообщества GitHub](https://docs.github.com/en/site-policy/github-terms/github-community-guidelines)
 
-## Resources
+## Ресурсы
 
-- **Project Documentation**: [README.md](README.md)
-- **API Documentation**: Available in the codebase
-- **Issue Tracker**: [GitHub Issues](https://github.com/jhaals/yopass/issues)
+- **Документация проекта**: [README.md](README.md)
+- **Документация API**: Доступна в коде
+- **Трекер задач**: [GitHub Issues](https://github.com/jhaals/yopass/issues)
 
 ---
 
-Thank you for contributing to Yopass! Your efforts help make secure secret sharing accessible to everyone. 🔐
+Спасибо за ваш вклад в Yopass! Ваши усилия помогают сделать безопасный обмен секретами доступным для всех. 🔐

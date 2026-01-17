@@ -14,8 +14,10 @@
     "buttonUpload": "Upload",
     "uploadFileButton": "Upload File",
     "dragDropText": "Drag & drop or click to choose a file",
-    "fileDescription": "File upload is designed for small files like ssh keys and certificates.",
+    "fileDescription": "File upload is designed for small files (up to 5MB) like ssh keys and certificates.",
     "errorSelectFile": "Please select a file to upload",
+    "errorFileTooLarge": "File is too large. Maximum size is 5MB",
+    "removeFile": "Remove file",
     "errorFailedToRead": "Failed to read file",
     "expirationLegendFile": "The encrypted file will be deleted automatically after"
   },

@@ -13,9 +13,9 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-func newTestServer(t *testing.T, db server.Database) (*httptest.Server, func()) {
+func newTestServer(t *testing.T, db yopass.Repository) (*httptest.Server, func()) {
 	y := server.Server{
-		DB:                  db,
+		Service:             yopass.NewService(db, 10000, false),
 		MaxLength:           10000,
 		Registry:            prometheus.NewRegistry(),
 		ForceOneTimeSecrets: false,
@@ -94,11 +94,6 @@ sbfqaG/iDbp+qDOc98IagMyPrEqKDxnhVVOraXy5dD9RDsntLso=
 }
 
 type testDB map[string]string
-
-func (db *testDB) Exists(key string) (bool, error) {
-	_, ok := (map[string]string(*db))[key]
-	return ok, nil
-}
 
 func (db *testDB) Get(key string) (yopass.Secret, error) {
 	msg, ok := (map[string]string(*db))[key]

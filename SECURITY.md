@@ -1,118 +1,118 @@
-# Security Policy
+# Политика безопасности
 
-I take the security of Yopass seriously. If you believe you have discovered a security vulnerability in Yopass, I encourage you to report it responsibly.
+Я серьезно отношусь к безопасности Yopass. Если вы считаете, что обнаружили уязвимость в системе безопасности Yopass, я призываю вас сообщить об этом ответственно.
 
-## Security Architecture Overview
+## Обзор архитектуры безопасности
 
-Yopass is designed with security as the primary focus:
+Yopass разработан с упором на безопасность:
 
-### Core Security Principles
+### Основные принципы безопасности
 
-- **Zero-Knowledge Architecture**: Secrets are encrypted client-side before transmission
-- **End-to-End Encryption**: Uses OpenPGP encryption with strong cryptographic standards
-- **One-Time Access**: Configurable one-time secret viewing to prevent replay attacks
-- **Minimal Data Retention**: Secrets automatically expire and are permanently deleted
-- **No Plain Text Storage**: Server never has access to unencrypted secrets
+- **Архитектура с нулевым разглашением (Zero-Knowledge)**: Секреты шифруются на стороне клиента перед передачей.
+- **Сквозное шифрование (End-to-End)**: Используется шифрование OpenPGP с сильными криптографическими стандартами.
+- **Одноразовый доступ**: Настраиваемый одноразовый просмотр секрета для предотвращения атак повторного воспроизведения.
+- **Минимальное хранение данных**: Секреты автоматически истекают и безвозвратно удаляются.
+- **Никакого хранения в открытом виде**: Сервер никогда не имеет доступа к нешифрованным секретам.
 
-### Security Features
+### Функции безопасности
 
-- **Client-Side Encryption**: All encryption/decryption happens in the browser
-- **Cryptographically Secure Random Generation**: Uses `window.crypto.getRandomValues()`
-- **Configurable Expiration**: Time-based secret expiration (1 hour to 1 week)
-- **Access Controls**: One-time viewing enforcement
-- **Secure Headers**: Proper Content Security Policy and security headers
-- **Input Validation**: Comprehensive input validation and sanitization
-- **Memory Safety**: Streaming uploads for large files to prevent memory exhaustion
+- **Шифрование на стороне клиента**: Все процессы шифрования/дешифрования происходят в браузере.
+- **Криптографически безопасная генерация случайных чисел**: Используется `window.crypto.getRandomValues()`.
+- **Настраиваемый срок действия**: Истечение срока действия секрета по времени (от 1 часа до 1 недели).
+- **Контроль доступа**: Принудительный одноразовый просмотр.
+- **Безопасные заголовки**: Правильная политика безопасности контента (CSP) и заголовки безопасности.
+- **Валидация ввода**: Комплексная проверка и очистка входных данных.
+- **Безопасность памяти**: Потоковая загрузка больших файлов для предотвращения исчерпания памяти.
 
-## Security Vulnerability Disclosure
+## Раскрытие уязвимостей безопасности
 
-### Reporting Security Issues
+### Как сообщить о проблемах с безопасностью
 
-Please follow these guidelines when reporting a security issue:
+Пожалуйста, следуйте этим рекомендациям при сообщении о проблеме безопасности:
 
-1. **Email the report to johan{a}haals.se** - Please do not create a public GitHub issue
-2. **Include detailed information**:
-   - Description of the vulnerability
-   - Steps to reproduce the issue
-   - Potential impact assessment
-   - Affected versions (if known)
-   - Suggested mitigations or remediations
-   - Your contact information for follow-up
+1. **Отправьте отчет по адресу johan{a}haals.se** — пожалуйста, не создавайте публичную проблему (issue) на GitHub.
+2. **Включите подробную информацию**:
+   - Описание уязвимости
+   - Шаги для воспроизведения проблемы
+   - Оценка потенциального воздействия
+   - Затронутые версии (если известны)
+   - Предлагаемые меры по смягчению или устранению последствий
+   - Ваша контактная информация для обратной связи
 
-3. **Allow reasonable response time** - I will do my best to respond promptly
+3. **Дайте разумное время на ответ** — я сделаю все возможное, чтобы ответить оперативно.
 
-### Response Process
+### Процесс реагирования
 
-When you report a security vulnerability:
+Когда вы сообщаете об уязвимости безопасности:
 
-1. **Acknowledgment**: I will acknowledge receipt
-2. **Investigation**: I will investigate and validate the reported issue
-3. **Resolution**: I will develop and test a fix
-4. **Disclosure**: I will coordinate disclosure timing with you
-5. **Credit**: I will acknowledge your contribution in security advisories (unless you prefer to remain anonymous)
+1. **Подтверждение**: Я подтвержу получение отчета.
+2. **Расследование**: Я расследую и проверю сообщенную проблему.
+3. **Решение**: Я разработаю и протестирую исправление.
+4. **Раскрытие**: Я согласую с вами время раскрытия информации.
+5. **Благодарность**: Я отмечу ваш вклад в рекомендациях по безопасности (если вы не предпочтете остаться анонимным).
 
-### Security Bounty
+### Вознаграждение за уязвимости
 
-While Yopass doesn't currently have a formal bug bounty program, I deeply appreciate security research efforts and will acknowledge your contribution in the project
+Хотя у Yopass в настоящее время нет официальной программы вознаграждения за ошибки (bug bounty), я глубоко ценю усилия по исследованию безопасности и отмечу ваш вклад в проекте.
 
-## What Qualifies as a Security Issue
+## Что считается проблемой безопасности
 
-### Valid Security Issues
+### Допустимые проблемы безопасности
 
-- **Authentication/Authorization bypasses**
-- **Server-side code execution vulnerabilities**
-- **Client-side code injection (XSS, CSRF)**
-- **Cryptographic implementation flaws**
-- **Data exposure vulnerabilities**
-- **Privilege escalation issues**
-- **Denial of service attacks**
-- **Information disclosure beyond intended design**
+- **Обход аутентификации/авторизации**
+- **Уязвимости выполнения кода на стороне сервера**
+- **Внедрение кода на стороне клиента (XSS, CSRF)**
+- **Недостатки реализации криптографии**
+- **Уязвимости, приводящие к утечке данных**
+- **Проблемы повышения привилегий**
+- **Атаки типа «отказ в обслуживании» (DoS)**
+- **Раскрытие информации сверх предусмотренного дизайном**
 
-### Security Issues NOT in Scope
+### Проблемы безопасности ВНЕ рамок рассмотрения
 
-I do not consider the following to be security issues:
+Я не считаю проблемами безопасности следующее:
 
-- **UUID/Key Enumeration**: Brute-force attacks against UUIDs or encryption keys
-- **Browser History/Cache**: URLs being stored in browser history or cache (by design)
-- **Build Dependencies**: Vulnerabilities in build-time dependencies not exploitable at runtime
-- **Social Engineering**: Issues requiring social engineering or physical access
-- **Rate Limiting**: Absence of rate limiting
-- **Information Disclosure**: Version information or technology stack disclosure
-- **Client-Side Storage**: Temporary storage of encrypted data in browser storage
+- **Перебор UUID/ключей**: Атаки методом грубой силы против UUID или ключей шифрования.
+- **История/кэш браузера**: Сохранение URL-адресов в истории или кэше браузера (предусмотрено дизайном).
+- **Зависимости сборки**: Уязвимости в зависимостях времени сборки, которые не могут быть использованы во время выполнения.
+- **Социальная инженерия**: Проблемы, требующие социальной инженерии или физического доступа.
+- **Ограничение частоты запросов (Rate Limiting)**: Отсутствие ограничения частоты запросов.
+- **Раскрытие информации**: Раскрытие информации о версии или технологическом стеке.
+- **Хранилище на стороне клиента**: Временное хранение зашифрованных данных в хранилище браузера.
 
-## Security Best Practices for Users
+## Лучшие практики безопасности для пользователей
 
-### For End Users
+### Для конечных пользователей
 
-- **Use Strong Passwords**: When creating custom passwords, use strong, unique passwords
-- **Verify Recipients**: Ensure you're sharing secrets with intended recipients only
-- **Use One-Time Secrets**: Enable one-time viewing for sensitive information
-- **Short Expiration**: Use the shortest practical expiration time
-- **Secure Channels**: Share secret URLs through secure communication channels
-- **Clear Browser Data**: Clear browser history/cache after accessing secrets
+- **Используйте сложные пароли**: При создании пользовательских паролей используйте сложные и уникальные пароли.
+- **Проверяйте получателей**: Убедитесь, что вы делитесь секретами только с намеченными получателями.
+- **Используйте одноразовые секреты**: Включите одноразовый просмотр для конфиденциальной информации.
+- **Короткий срок действия**: Используйте минимально возможный на практике срок действия.
+- **Безопасные каналы**: Делитесь URL-адресами секретов через безопасные каналы связи.
+- **Очищайте данные браузера**: Очищайте историю/кэш браузера после доступа к секретам.
 
-### For Administrators
+### Для администраторов
 
-- **HTTPS Only**: Always deploy Yopass with HTTPS/TLS encryption
-- **Security Headers**: Configure proper security headers (CSP, HSTS, etc.)
-- **Regular Updates**: Keep Yopass and dependencies updated
-- **Monitor Logs**: Implement proper logging and monitoring
-- **Access Controls**: Restrict administrative access appropriately
-- **Backup Security**: Ensure backup systems don't contain secrets
-- **Network Security**: Deploy behind appropriate network security controls
+- **Только HTTPS**: Всегда развертывайте Yopass с использованием шифрования HTTPS/TLS.
+- **Заголовки безопасности**: Настройте соответствующие заголовки безопасности (CSP, HSTS и т. д.).
+- **Регулярные обновления**: Своевременно обновляйте Yopass и его зависимости.
+- **Мониторинг логов**: Внедрите надлежащее логирование и мониторинг.
+- **Контроль доступа**: Соответствующим образом ограничьте административный доступ.
+- **Безопасность резервных копий**: Убедитесь, что системы резервного копирования не содержат секретов.
+- **Сетевая безопасность**: Развертывайте за соответствующими средствами сетевой защиты.
 
-### Security Advisories
+### Рекомендации по безопасности
 
-Security updates are published through release notes.
+Обновления безопасности публикуются в примечаниях к выпуску (release notes).
 
-## Contact Information
+## Контактная информация
 
-**Security Contact**: johan{a}haals.se
+**Контакт по вопросам безопасности**: johan{a}haals.se
 
-For urgent security issues, please include "SECURITY" in the email subject line.
+Для срочных проблем безопасности, пожалуйста, укажите «SECURITY» в теме письма.
 
-**PGP Key**: Available on request for sensitive communications
+**Ключ PGP**: Доступен по запросу для конфиденциальной переписки.
 
 ---
 
-I appreciate your efforts in keeping Yopass secure for everyone. Your responsible disclosure helps maintain the security and privacy that users depend on.
+Я ценю ваши усилия по обеспечению безопасности Yopass для всех. Ваше ответственное раскрытие информации помогает поддерживать безопасность и конфиденциальность, на которые полагаются пользователи.

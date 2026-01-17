@@ -77,7 +77,7 @@ func (s *Server) httpLogFormatter() func(io.Writer, handlers.LogFormatterParams)
 	}
 
 	return func(_ io.Writer, params handlers.LogFormatterParams) {
-		var req = params.Request
+		req := params.Request
 		if req == nil {
 			logger.Error(
 				"Unable to log request handled because no request exists",

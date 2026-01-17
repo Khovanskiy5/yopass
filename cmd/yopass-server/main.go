@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/jhaals/yopass/pkg/server"
+	"github.com/jhaals/yopass/pkg/yopass"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -31,7 +32,7 @@ func init() {
 	pflag.Int("port", 1337, "listen port")
 	pflag.String("database", "memcached", "database backend ('memcached' or 'redis')")
 	pflag.String("asset-path", "public", "path to the assets folder")
-	pflag.Int("max-length", 10000, "max length of encrypted secret")
+	pflag.Int("max-length", 5242880, "max length of encrypted secret")
 	pflag.String("memcached", "localhost:11211", "memcached address")
 	pflag.Int("metrics-port", -1, "metrics server listen port")
 	pflag.String("redis", "redis://localhost:6379/0", "Redis URL")
@@ -69,8 +70,14 @@ func main() {
 	key := viper.GetString("tls-key")
 	quit := make(chan os.Signal, 1)
 
+	yopassService := yopass.NewService(
+		db,
+		viper.GetInt("max-length"),
+		viper.GetBool("force-onetime-secrets"),
+	)
+
 	y := server.Server{
-		DB:                  db,
+		Service:             yopassService,
 		MaxLength:           viper.GetInt("max-length"),
 		Registry:            registry,
 		ForceOneTimeSecrets: viper.GetBool("force-onetime-secrets"),
@@ -158,8 +165,8 @@ func configureZapLogger() *zap.Logger {
 	return logger
 }
 
-func setupDatabase(logger *zap.Logger) (server.Database, error) {
-	var db server.Database
+func setupDatabase(logger *zap.Logger) (yopass.Repository, error) {
+	var db yopass.Repository
 	switch database := viper.GetString("database"); database {
 	case "memcached":
 		memcached := viper.GetString("memcached")

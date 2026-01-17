@@ -18,9 +18,9 @@ import (
 	"go.uber.org/zap/zaptest"
 )
 
-func newTestServer(t *testing.T, db Database, maxLength int, forceOneTime bool) Server {
+func newTestServer(t *testing.T, db yopass.Repository, maxLength int, forceOneTime bool) Server {
 	return Server{
-		DB:                  db,
+		Service:             yopass.NewService(db, maxLength, forceOneTime),
 		MaxLength:           maxLength,
 		Registry:            prometheus.NewRegistry(),
 		ForceOneTimeSecrets: forceOneTime,
@@ -39,9 +39,6 @@ func (db *mockDB) Put(key string, secret yopass.Secret) error {
 func (db *mockDB) Delete(key string) (bool, error) {
 	return true, nil
 }
-func (db *mockDB) Exists(key string) (bool, error) {
-	return true, nil
-}
 func (db *mockDB) Status(key string) (bool, error) {
 	return false, nil
 }
@@ -55,9 +52,6 @@ func (db *brokenDB) Put(key string, secret yopass.Secret) error {
 	return fmt.Errorf("Some error")
 }
 func (db *brokenDB) Delete(key string) (bool, error) {
-	return false, fmt.Errorf("Some error")
-}
-func (db *brokenDB) Exists(key string) (bool, error) {
 	return false, fmt.Errorf("Some error")
 }
 func (db *brokenDB) Status(key string) (bool, error) {
@@ -75,23 +69,20 @@ func (db *mockBrokenDB2) Put(key string, secret yopass.Secret) error {
 func (db *mockBrokenDB2) Delete(key string) (bool, error) {
 	return false, nil
 }
-func (db *mockBrokenDB2) Exists(key string) (bool, error) {
-	return false, fmt.Errorf("Some error")
-}
 func (db *mockBrokenDB2) Status(key string) (bool, error) {
 	return true, nil
 }
 
 type mockStatusDB struct {
-	oneTime bool
-	exists  bool
+	isOneTime bool
+	exists    bool
 }
 
 func (db *mockStatusDB) Get(key string) (yopass.Secret, error) {
 	if !db.exists {
 		return yopass.Secret{}, fmt.Errorf("Secret not found")
 	}
-	return yopass.Secret{Message: "test", OneTime: db.oneTime}, nil
+	return yopass.Secret{Message: "test", OneTime: db.isOneTime}, nil
 }
 
 func (db *mockStatusDB) Put(key string, secret yopass.Secret) error {
@@ -102,15 +93,11 @@ func (db *mockStatusDB) Delete(key string) (bool, error) {
 	return true, nil
 }
 
-func (db *mockStatusDB) Exists(key string) (bool, error) {
-	return db.exists, nil
-}
-
 func (db *mockStatusDB) Status(key string) (bool, error) {
 	if !db.exists {
 		return false, fmt.Errorf("Secret not found")
 	}
-	return db.oneTime, nil
+	return db.isOneTime, nil
 }
 
 type mockErrorDB struct {
@@ -141,10 +128,6 @@ func (db *mockErrorDB) Delete(key string) (bool, error) {
 	return true, nil
 }
 
-func (db *mockErrorDB) Exists(key string) (bool, error) {
-	return true, nil
-}
-
 func (db *mockErrorDB) Status(key string) (bool, error) {
 	if db.errorOnStatus {
 		return false, fmt.Errorf("Database error")
@@ -168,7 +151,7 @@ sbfqaG/iDbp+qDOc98IagMyPrEqKDxnhVVOraXy5dD9RDsntLso=
 		statusCode int
 		body       io.Reader
 		output     string
-		db         Database
+		db         yopass.Repository
 		maxLength  int
 	}{
 		{
@@ -310,7 +293,7 @@ func TestGetSecret(t *testing.T) {
 		name       string
 		statusCode int
 		output     string
-		db         Database
+		db         yopass.Repository
 	}{
 		{
 			name:       "Get Secret",
@@ -356,11 +339,12 @@ func TestDeleteSecret(t *testing.T) {
 		name       string
 		statusCode int
 		output     string
-		db         Database
+		db         yopass.Repository
 	}{
 		{
 			name:       "Delete Secret",
 			statusCode: 204,
+			output:     "",
 			db:         &mockDB{},
 		},
 		{
@@ -760,22 +744,19 @@ func TestGetSecretStatus(t *testing.T) {
 		name       string
 		statusCode int
 		output     string
-		db         Database
-		oneTime    bool
+		db         yopass.Repository
 	}{
 		{
 			name:       "Secret exists - one time",
 			statusCode: 200,
 			output:     `{"oneTime":true}`,
-			db:         &mockStatusDB{oneTime: true, exists: true},
-			oneTime:    true,
+			db:         &mockStatusDB{isOneTime: true, exists: true},
 		},
 		{
 			name:       "Secret exists - not one time",
 			statusCode: 200,
 			output:     `{"oneTime":false}`,
-			db:         &mockStatusDB{oneTime: false, exists: true},
-			oneTime:    false,
+			db:         &mockStatusDB{isOneTime: false, exists: true},
 		},
 		{
 			name:       "Secret not found",
@@ -972,7 +953,7 @@ func TestGetSecretWriteError(t *testing.T) {
 }
 
 func TestGetSecretStatusWriteError(t *testing.T) {
-	server := newTestServer(t, &mockStatusDB{exists: true, oneTime: false}, 1000, false)
+	server := newTestServer(t, &mockStatusDB{exists: true, isOneTime: false}, 1000, false)
 	
 	req := httptest.NewRequest("GET", "/secret/test/status", nil)
 	req = mux.SetURLVars(req, map[string]string{"key": "test"})
@@ -1134,9 +1115,10 @@ Q5FI66ugslngweHlYODQ5IWLpbwMHdiymG7uoIKUusHi1lHUv+Gx0AA=
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			result := isPGPEncrypted(test.content)
+			srv := Server{Service: yopass.NewService(&mockDB{}, 1024, false)}
+			result := srv.Service.IsPGPEncrypted(test.content)
 			if result != test.expected {
-				t.Errorf("isPGPEncrypted(%q) = %v, expected %v", test.name, result, test.expected)
+				t.Errorf("IsPGPEncrypted(%q) = %v, expected %v", test.name, result, test.expected)
 			}
 		})
 	}
@@ -1158,7 +1140,7 @@ sbfqaG/iDbp+qDOc98IagMyPrEqKDxnhVVOraXy5dD9RDsntLso=
 		statusCode int
 		body       string
 		output     string
-		db         Database
+		db         yopass.Repository
 	}{
 		{
 			name:       "valid PGP encrypted message",
@@ -1237,7 +1219,7 @@ dhgGsvKwXJm0kEwGwqj6mJq/j28FSFoP9Et/LtRuEe3Ct06WOrrHQ4v9DC4=
 		statusCode int
 		body       string
 		output     string
-		db         Database
+		db         yopass.Repository
 	}{
 		{
 			name:       "valid PGP encrypted file",
