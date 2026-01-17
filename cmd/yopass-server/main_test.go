@@ -19,7 +19,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jhaals/yopass/pkg/server"
+	"github.com/Khovanskiy5/yopass/pkg/server"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"

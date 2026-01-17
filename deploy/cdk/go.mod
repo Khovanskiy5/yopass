@@ -1,11 +1,11 @@
 module github.com/yopass/yopass-lambda
 
-replace github.com/jhaals/yopass => ../../
+replace github.com/Khovanskiy5/yopass => ../../
 
 require (
 	github.com/akrylysov/algnhsa v1.1.0
 	github.com/aws/aws-sdk-go v1.55.8
-	github.com/jhaals/yopass v0.0.0-20251008195641-46e1a8a9292b
+	github.com/Khovanskiy5/yopass v0.0.0-20251008195641-46e1a8a9292b
 	github.com/prometheus/client_golang v1.23.2
 	github.com/spf13/viper v1.21.0
 	go.uber.org/zap v1.27.0

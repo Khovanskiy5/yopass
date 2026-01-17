@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/bradfitz/gomemcache/memcache"
-	"github.com/jhaals/yopass/pkg/yopass"
+	"github.com/Khovanskiy5/yopass/pkg/yopass"
 )
 
 func TestMemcached(t *testing.T) {

@@ -1,6 +1,6 @@
-# CDK configuration for deploying yopass in AWS.
+# Конфигурация CDK для развертывания yopass в AWS.
 
-This is __primarily__ for the project itself and needs alterations to be used in your own setup.
+Это предназначено __прежде всего__ для самого проекта и требует изменений для использования в вашей собственной настройке.
 
 ```
 npx cdk deploy
@@ -12,13 +12,13 @@ zip deployment.zip bootstrap
 ```
 
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+Файл `cdk.json` сообщает CDK Toolkit, как запускать ваше приложение.
 
-## Useful commands
+## Полезные команды
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `npx cdk deploy`  deploy this stack to your default AWS account/region
-* `npx cdk diff`    compare deployed stack with current state
-* `npx cdk synth`   emits the synthesized CloudFormation template
+* `npm run build`   компиляция typescript в js
+* `npm run watch`   отслеживание изменений и компиляция
+* `npm run test`    выполнение юнит-тестов jest
+* `npx cdk deploy`  развертывание этого стека в вашу учетную запись/регион AWS по умолчанию
+* `npx cdk diff`    сравнение развернутого стека с текущим состоянием
+* `npx cdk synth`   генерация синтезированного шаблона CloudFormation

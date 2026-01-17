@@ -8,23 +8,38 @@ import (
 )
 
 // Service handles business logic for secrets
-type Service struct {
+type Service interface {
+	CreateSecret(secret Secret) (string, error)
+	GetSecret(key string) (Secret, error)
+	GetSecretStatus(key string) (bool, error)
+	DeleteSecret(key string) (bool, error)
+	IsPGPEncrypted(content string) bool
+}
+
+type service struct {
 	repo                Repository
 	maxLength           int
 	forceOneTimeSecrets bool
+	allowedExpirations  []int32
 }
 
 // NewService creates a new Service
 func NewService(repo Repository, maxLength int, forceOneTimeSecrets bool) Service {
-	return Service{
+	return NewServiceWithExpirations(repo, maxLength, forceOneTimeSecrets, []int32{3600, 86400, 604800})
+}
+
+// NewServiceWithExpirations creates a new Service with custom allowed expirations
+func NewServiceWithExpirations(repo Repository, maxLength int, forceOneTimeSecrets bool, allowedExpirations []int32) Service {
+	return &service{
 		repo:                repo,
 		maxLength:           maxLength,
 		forceOneTimeSecrets: forceOneTimeSecrets,
+		allowedExpirations:  allowedExpirations,
 	}
 }
 
 // CreateSecret stores a new secret and returns its key
-func (s *Service) CreateSecret(secret Secret) (string, error) {
+func (s *service) CreateSecret(secret Secret) (string, error) {
 	if !s.IsPGPEncrypted(secret.Message) {
 		return "", fmt.Errorf("Message must be PGP encrypted")
 	}
@@ -55,24 +70,23 @@ func (s *Service) CreateSecret(secret Secret) (string, error) {
 }
 
 // GetSecret retrieves a secret by key
-func (s *Service) GetSecret(key string) (Secret, error) {
+func (s *service) GetSecret(key string) (Secret, error) {
 	return s.repo.Get(key)
 }
 
 // GetSecretStatus returns the one-time status of a secret
-func (s *Service) GetSecretStatus(key string) (bool, error) {
+func (s *service) GetSecretStatus(key string) (bool, error) {
 	return s.repo.Status(key)
 }
 
 // DeleteSecret removes a secret by key
-func (s *Service) DeleteSecret(key string) (bool, error) {
+func (s *service) DeleteSecret(key string) (bool, error) {
 	return s.repo.Delete(key)
 }
 
-// validExpiration validates that expiration is either
-// 3600(1hour), 86400(1day) or 604800(1week)
-func (s *Service) validExpiration(expiration int32) bool {
-	for _, ttl := range []int32{3600, 86400, 604800} {
+// validExpiration validates that expiration is in the allowed list
+func (s *service) validExpiration(expiration int32) bool {
+	for _, ttl := range s.allowedExpirations {
 		if ttl == expiration {
 			return true
 		}
@@ -81,7 +95,7 @@ func (s *Service) validExpiration(expiration int32) bool {
 }
 
 // IsPGPEncrypted verifies that the provided content is a valid PGP encrypted message
-func (s *Service) IsPGPEncrypted(content string) bool {
+func (s *service) IsPGPEncrypted(content string) bool {
 	if content == "" {
 		return false
 	}

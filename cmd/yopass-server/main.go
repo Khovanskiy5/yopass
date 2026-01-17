@@ -14,8 +14,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jhaals/yopass/pkg/server"
-	"github.com/jhaals/yopass/pkg/yopass"
+	"github.com/Khovanskiy5/yopass/pkg/server"
+	"github.com/Khovanskiy5/yopass/pkg/yopass"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -47,6 +47,7 @@ func init() {
 	pflag.StringSlice("trusted-proxies", []string{}, "trusted proxy IP addresses or CIDR blocks for X-Forwarded-For header validation")
 	pflag.String("privacy-notice-url", "", "URL to privacy notice page")
 	pflag.String("imprint-url", "", "URL to imprint/legal notice page")
+	pflag.IntSlice("allowed-expirations", []int{3600, 86400, 604800}, "allowed expiration times in seconds")
 	pflag.CommandLine.AddGoFlag(&flag.Flag{Name: "log-level", Usage: "Log level", Value: &logLevel})
 
 	viper.AutomaticEnv()
@@ -69,11 +70,18 @@ func main() {
 	cert := viper.GetString("tls-cert")
 	key := viper.GetString("tls-key")
 	quit := make(chan os.Signal, 1)
+	
+	allowedExpirations := viper.GetIntSlice("allowed-expirations")
+	var allowedExpirationsI32 []int32
+	for _, e := range allowedExpirations {
+		allowedExpirationsI32 = append(allowedExpirationsI32, int32(e))
+	}
 
-	yopassService := yopass.NewService(
+	yopassService := yopass.NewServiceWithExpirations(
 		db,
 		viper.GetInt("max-length"),
 		viper.GetBool("force-onetime-secrets"),
+		allowedExpirationsI32,
 	)
 
 	y := server.Server{

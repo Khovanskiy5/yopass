@@ -8,8 +8,8 @@ import (
 
 	"go.uber.org/zap/zaptest"
 
-	"github.com/jhaals/yopass/pkg/server"
-	"github.com/jhaals/yopass/pkg/yopass"
+	"github.com/Khovanskiy5/yopass/pkg/server"
+	"github.com/Khovanskiy5/yopass/pkg/yopass"
 	"github.com/prometheus/client_golang/prometheus"
 )
 

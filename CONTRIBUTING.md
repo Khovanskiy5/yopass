@@ -20,7 +20,7 @@
 
 1. **Клонируйте репозиторий:**
    ```bash
-   git clone https://github.com/jhaals/yopass.git
+   git clone https://github.com/Khovanskiy5/yopass.git
    cd yopass
    ```
 
@@ -281,7 +281,7 @@ docker-compose up -d
 - [Документация](https://yopass.se) — подробные руководства по развертыванию
 
 ### Получение помощи
-- Проверьте существующие [GitHub issues](https://github.com/jhaals/yopass/issues)
+- Проверьте существующие [GitHub issues](https://github.com/Khovanskiy5/yopass/issues)
 - Читайте [документацию](https://yopass.se)
 - Задавайте вопросы в обсуждениях GitHub (Discussions)
 
@@ -296,7 +296,7 @@ docker-compose up -d
 
 - **Документация проекта**: [README.md](README.md)
 - **Документация API**: Доступна в коде
-- **Трекер задач**: [GitHub Issues](https://github.com/jhaals/yopass/issues)
+- **Трекер задач**: [GitHub Issues](https://github.com/Khovanskiy5/yopass/issues)
 
 ---
 

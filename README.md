@@ -2,9 +2,9 @@
 
 # Yopass — Безопасный обмен секретами
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/jhaals/yopass)](https://goreportcard.com/report/github.com/jhaals/yopass)
-[![codecov](https://codecov.io/gh/jhaals/yopass/branch/master/graph/badge.svg)](https://codecov.io/gh/jhaals/yopass)
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/jhaals/yopass?sort=semver)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Khovanskiy5/yopass)](https://goreportcard.com/report/github.com/Khovanskiy5/yopass)
+[![codecov](https://codecov.io/gh/Khovanskiy5/yopass/branch/master/graph/badge.svg)](https://codecov.io/gh/Khovanskiy5/yopass)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Khovanskiy5/yopass?sort=semver)
 
 ![demo](https://ydemo.netlify.com/yopass-demo.gif)
 
@@ -25,7 +25,7 @@ Yopass — это проект для быстрого и безопасного
 
 ## История
 
-Yopass был впервые выпущен в 2014 году и с тех пор поддерживается мной при участии этой фантастической группы [контрибьюторов](https://github.com/jhaals/yopass/graphs/contributors). Yopass используется многими крупными корпорациями, некоторые из которых перечислены ниже.
+Yopass был впервые выпущен в 2014 году и с тех пор поддерживается мной при участии этой фантастической группы [контрибьюторов](https://github.com/Khovanskiy5/yopass/graphs/contributors). Yopass используется многими крупными корпорациями, некоторые из которых перечислены ниже.
 
 Если вы используете Yopass и хотите поддержать проект помимо вклада в код, вы можете выразить благодарность по электронной почте, сделать пожертвование или дать согласие на указание названия вашей компании в качестве пользователя Yopass в этом файле.
 
@@ -44,17 +44,16 @@ $ yopass --help
 Yopass - Secure sharing for secrets, passwords and files
 
 Flags:
-      --api string          Yopass API server location (default "https://api.yopass.se")
-      --decrypt string      Decrypt secret URL
-      --expiration string   Duration after which secret will be deleted [1h, 1d, 1w] (default "1h")
-      --file string         Read secret from file instead of stdin
-      --key string          Manual encryption/decryption key
-      --one-time            One-time download (default true)
-      --url string          Yopass public URL (default "https://yopass.se")
+      --api string          расположение API-сервера Yopass (по умолчанию "https://api.yopass.se")
+      --decrypt string      URL для расшифровки секрета
+      --expiration string   длительность, после которой секрет будет удален [1h, 1d, 1w] (по умолчанию "1h")
+      --file string         прочитать секрет из файла вместо stdin
+      --key string          вручную заданный ключ шифрования/расшифровки
+      --one-time            одноразовая загрузка (по умолчанию true)
+      --url string          публичный URL Yopass (по умолчанию "https://yopass.se")
 
-Settings are read from flags, environment variables, or a config file located at
-~/.config/yopass/defaults.<json,toml,yml,hcl,ini,...> in this order. Environment
-variables have to be prefixed with YOPASS_ and dashes become underscores.
+Настройки считываются из флагов, переменных окружения или конфигурационного файла, расположенного по адресу
+~/.config/yopass/defaults.<json,toml,yml,hcl,ini,...> в указанном порядке. Переменные окружения должны иметь префикс YOPASS_, а дефисы заменяются на подчеркивания.
 
 Examples:
       # Зашифровать и отправить секрет из stdin
@@ -77,7 +76,7 @@ Website: https://yopass.se
 - Компиляция из исходного кода (требуется Go >= v1.21)
 
   ```console
-  go install github.com/jhaals/yopass/cmd/yopass@latest
+  go install github.com/Khovanskiy5/yopass/cmd/yopass@latest
   ```
 
 ## Установка / Конфигурация
@@ -88,27 +87,28 @@ Website: https://yopass.se
 
 ```console
 $ yopass-server -h
-      --address string             listen address (default 0.0.0.0)
-      --database string            database backend ('memcached' or 'redis') (default "memcached")
-      --max-length int             max length of encrypted secret (default 5242880)
-      --memcached string           Memcached address (default "localhost:11211")
-      --metrics-port int           metrics server listen port (default -1)
-      --port int                   listen port (default 1337)
-      --redis string               Redis URL (default "redis://localhost:6379/0")
-      --tls-cert string            path to TLS certificate
-      --tls-key string             path to TLS key
-      --cors-allow-origin          Access-Control-Allow-Origin CORS setting (default *)
-      --force-onetime-secrets      reject non onetime secrets from being created
-      --disable-upload             disable the /file upload endpoints
-      --prefetch-secret            display information that the secret might be one time use (default true)
-      --disable-features           disable features section on frontend
-      --no-language-switcher       disable the language switcher in the UI
-      --trusted-proxies strings    trusted proxy IP addresses or CIDR blocks for X-Forwarded-For header validation
-      --privacy-notice-url string  URL to privacy notice page
-      --imprint-url string         URL to imprint/legal notice page
+      --address string             адрес прослушивания (по умолчанию 0.0.0.0)
+      --allowed-expirations ints   допустимое время истечения срока действия в секундах (по умолчанию [3600,86400,604800])
+      --database string            движок базы данных ('memcached' или 'redis') (default "memcached")
+      --max-length int             максимальная длина зашифрованного секрета (по умолчанию 5242880)
+      --memcached string           адрес Memcached (по умолчанию "localhost:11211")
+      --metrics-port int           порт прослушивания сервера метрик (по умолчанию -1)
+      --port int                   порт прослушивания (по умолчанию 1337)
+      --redis string               URL Redis (по умолчанию "redis://localhost:6379/0")
+      --tls-cert string            путь к TLS-сертификату
+      --tls-key string             путь к TLS-ключу
+      --cors-allow-origin string   настройка Access-Control-Allow-Origin CORS (по умолчанию "*")
+      --force-onetime-secrets      запретить создание секретов, которые не являются одноразовыми
+      --disable-upload             отключить эндпоинты загрузки /file
+      --prefetch-secret            отображать информацию о том, что секрет может быть одноразовым (по умолчанию true)
+      --disable-features           отключить раздел функций во фронтенде
+      --no-language-switcher       отключить переключатель языков в интерфейсе
+      --trusted-proxies strings    доверенные IP-адреса прокси или блоки CIDR для валидации заголовка X-Forwarded-For
+      --privacy-notice-url string  URL страницы уведомления о конфиденциальности
+      --imprint-url string         URL страницы с юридической информацией (imprint)
 ```
 
-Зашифрованные секреты могут храниться в Memcached или Redis путем изменения флага `--database`.
+Зашифрованные секреты могут храниться в Memcached или Redis путем изменения флага `--database`. Списки допустимых сроков хранения (expiration) можно настроить с помощью флага `--allowed-expirations`.
 
 ### Настройка прокси
 
@@ -168,7 +168,7 @@ docker-compose up -d
 ```console
 docker run --name memcached_yopass -d memcached
 docker run -p 443:1337 -v /local/certs/:/certs \
-    --link memcached_yopass:memcached -d jhaals/yopass --memcached=memcached:11211 --tls-key=/certs/tls.key --tls-cert=/certs/tls.crt
+    --link memcached_yopass:memcached -d Khovanskiy5/yopass --memcached=memcached:11211 --tls-key=/certs/tls.key --tls-cert=/certs/tls.crt
 ```
 
 После этого Yopass будет доступен на порту 443 через все IP-адреса хоста, включая публичные. Чтобы ограничить доступ конкретным IP-адресом, используйте `-p 127.0.0.1:443:1337`.
@@ -177,7 +177,7 @@ docker run -p 443:1337 -v /local/certs/:/certs \
 
 ```console
 docker run --name memcached_yopass -d memcached
-docker run -p 127.0.0.1:80:1337 --link memcached_yopass:memcached -d jhaals/yopass --memcached=memcached:11211
+docker run -p 127.0.0.1:80:1337 --link memcached_yopass:memcached -d Khovanskiy5/yopass --memcached=memcached:11211
 ```
 
 Затем направьте ваш обратный прокси, обрабатывающий TLS-соединения, на `127.0.0.1:80`.
@@ -207,4 +207,4 @@ Yopass может опционально предоставлять метрик
 
 ## Переводы
 
-Yopass принимает переводы на дополнительные языки. Фронтенд поддерживает интернационализацию с использованием react-i18next, см. [текущие переводы](https://github.com/jhaals/yopass/blob/master/website/src/shared/lib/i18n.ts). Вклады в перевод приветствуются через pull requests, см. пример [здесь](https://github.com/jhaals/yopass/pull/3024) для добавления нового языка.
+Yopass принимает переводы на дополнительные языки. Фронтенд поддерживает интернационализацию с использованием react-i18next, см. [текущие переводы](https://github.com/Khovanskiy5/yopass/blob/master/website/src/shared/lib/i18n.ts). Вклады в перевод приветствуются через pull requests, см. пример [здесь](https://github.com/Khovanskiy5/yopass/pull/3024) для добавления нового языка.
