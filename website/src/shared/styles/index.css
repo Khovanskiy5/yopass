@@ -3,5 +3,5 @@
   themes:
     emerald --default,
     dim;
-  exclude: radial-progress;
+  exclude: properties, radialprogress;
 }
