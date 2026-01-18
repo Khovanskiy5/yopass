@@ -11,11 +11,13 @@ export function randomInt(min: number, max: number): number {
 }
 
 export function randomString(): string {
+  const charset =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+~';
+  const byteArray = new Uint8Array(32);
+  window.crypto.getRandomValues(byteArray);
   let text = '';
-  const possible =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < 22; i++) {
-    text += possible.charAt(randomInt(0, possible.length));
+  for (let i = 0; i < byteArray.length; i++) {
+    text += charset[byteArray[i] % charset.length];
   }
   return text;
 }

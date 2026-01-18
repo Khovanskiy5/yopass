@@ -1,5 +1,4 @@
-import { readMessage } from 'openpgp';
-import { decrypt } from 'openpgp';
+import { decryptMessage } from '@shared/lib/crypto';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'react-qr-code';
@@ -10,7 +9,9 @@ import EnterDecryptionKey from './EnterDecryptionKey';
 export default function Decryptor({ secret }: { secret: string }) {
   const { t } = useTranslation();
   const { format, password: paramsPassword } = useParams();
-  const [password, setPassword] = useState(() => paramsPassword ?? '');
+  const [password, setPassword] = useState(() =>
+    paramsPassword ? decodeURIComponent(paramsPassword) : '',
+  );
   const [showQR, setShowQR] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -18,11 +19,11 @@ export default function Decryptor({ secret }: { secret: string }) {
     if (!password) {
       return;
     }
-    const message = await decrypt({
-      message: await readMessage({ armoredMessage: secret }),
-      passwords: password,
-      format: format === 'f' ? 'binary' : 'utf8',
-    });
+    const message = await decryptMessage(
+      secret,
+      password,
+      format === 'f' ? 'binary' : 'utf8',
+    );
 
     if (format === 'f') {
       // For files, return an object with binary data and filename

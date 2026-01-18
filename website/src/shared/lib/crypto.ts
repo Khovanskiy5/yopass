@@ -22,5 +22,6 @@ export async function encryptMessage(data: string, passwords: string) {
   return encrypt({
     message: await createMessage({ text: data }),
     passwords,
+    encryptionKeys: [], // ensures symmetric encryption if only passwords are provided
   });
 }

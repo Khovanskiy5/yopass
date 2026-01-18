@@ -45,9 +45,10 @@ export default function CreateSecret() {
       return;
     }
     const pw = getPassword();
+    const encrypted = await encryptMessage(form.secret, pw);
     const { data, status } = await postSecret({
       expiration: parseInt(form.expiration),
-      message: await encryptMessage(form.secret, pw),
+      message: encrypted,
       one_time: config?.FORCE_ONETIME_SECRETS || oneTime,
     });
     if (status !== 200) {

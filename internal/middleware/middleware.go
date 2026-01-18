@@ -32,6 +32,9 @@ func SecurityHeaders(next http.Handler) http.Handler {
 		"img-src 'self' data:",
 		"script-src 'self'",
 		"style-src 'self' 'unsafe-inline'",
+		"connect-src 'self' *",
+		"object-src 'none'",
+		"base-uri 'self'",
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

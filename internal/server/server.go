@@ -30,7 +30,9 @@ func (s *Server) Start(handler http.Handler) *http.Server {
 	srv := &http.Server{
 		Addr:      fmt.Sprintf("%s:%d", s.cfg.Address, s.cfg.Port),
 		Handler:   handler,
-		TLSConfig: &tls.Config{MinVersion: tls.VersionTLS12},
+		TLSConfig: &tls.Config{
+			MinVersion: tls.VersionTLS13,
+		},
 	}
 
 	go func() {
