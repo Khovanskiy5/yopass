@@ -7,7 +7,8 @@
     "inputCustomPasswordLabel": "Custom Password",
     "inputCustomPasswordPlaceholder": "Enter your password...",
     "inputOneTimeLabel": "One-time download",
-    "inputGenerateKeyLabel": "Generate decryption key"
+    "inputGenerateKeyLabel": "Generate decryption key",
+    "errorSecretRequired": "Secret is required"
   },
   "upload": {
     "title": "Upload file",

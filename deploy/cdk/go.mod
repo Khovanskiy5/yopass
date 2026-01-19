@@ -3,12 +3,12 @@ module github.com/yopass/yopass-lambda
 replace github.com/Khovanskiy5/yopass => ../../
 
 require (
+	github.com/Khovanskiy5/yopass v0.0.0-20251008195641-46e1a8a9292b
 	github.com/akrylysov/algnhsa v1.1.0
 	github.com/aws/aws-sdk-go v1.55.8
-	github.com/Khovanskiy5/yopass v0.0.0-20251008195641-46e1a8a9292b
 	github.com/prometheus/client_golang v1.23.2
 	github.com/spf13/viper v1.21.0
-	go.uber.org/zap v1.27.0
+	go.uber.org/zap v1.27.1
 )
 
 require (
@@ -37,9 +37,9 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/crypto v0.45.0 // indirect
-	golang.org/x/sys v0.38.0 // indirect
-	golang.org/x/text v0.31.0 // indirect
+	golang.org/x/crypto v0.47.0 // indirect
+	golang.org/x/sys v0.40.0 // indirect
+	golang.org/x/text v0.33.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 )
 

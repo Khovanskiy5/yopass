@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -78,7 +79,10 @@ func init() {
 	pflag.Bool("one-time", viper.GetBool("one-time"), "One-time download")
 	pflag.String("url", viper.GetString("url"), "Yopass public URL")
 	if err := viper.BindPFlags(pflag.CommandLine); err != nil {
-		fmt.Fprintln(os.Stderr, "Unable to bind flags:", err)
+		_, err := fmt.Fprintln(os.Stderr, "Unable to bind flags:", err)
+		if err != nil {
+			return
+		}
 		os.Exit(3)
 	}
 }
@@ -96,7 +100,10 @@ func main() {
 	}
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		_, err2 := fmt.Fprintln(os.Stderr, err)
+		if err2 != nil {
+			return
+		}
 		os.Exit(1)
 	}
 }
@@ -214,19 +221,25 @@ func expiration(s string) int32 {
 
 func parse(args []string, stderr io.Writer) int {
 	pflag.Usage = func() {
-		fmt.Fprintf(
+		_, err := fmt.Fprintf(
 			stderr,
 			strings.TrimPrefix(usageTemplate, "\n"),
 			strings.TrimSuffix(pflag.CommandLine.FlagUsages(), "\n"),
 			viper.Get("url"),
 		)
+		if err != nil {
+			return
+		}
 	}
 
 	if err := pflag.CommandLine.Parse(args); err != nil {
-		if err == pflag.ErrHelp {
+		if errors.Is(err, pflag.ErrHelp) {
 			return 0
 		}
-		fmt.Fprintln(stderr, err)
+		_, err := fmt.Fprintln(stderr, err)
+		if err != nil {
+			return 0
+		}
 		return 1
 	}
 	return -1

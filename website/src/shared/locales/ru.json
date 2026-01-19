@@ -7,7 +7,8 @@
     "inputCustomPasswordLabel": "Собственный пароль",
     "inputCustomPasswordPlaceholder": "Введите пароль...",
     "inputOneTimeLabel": "Одноразовая загрузка",
-    "inputGenerateKeyLabel": "Сгенерировать ключ расшифровки"
+    "inputGenerateKeyLabel": "Сгенерировать ключ расшифровки",
+    "errorSecretRequired": "Поле секрета обязательно для заполнения"
   },
   "upload": {
     "title": "Загрузка файла",

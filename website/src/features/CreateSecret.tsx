@@ -37,11 +37,14 @@ export default function CreateSecret() {
     register,
     handleSubmit,
     setError,
-    formState: { errors },
-  } = useForm<Secret>();
+    formState: { errors, isValid },
+  } = useForm<Secret>({
+    mode: 'onChange',
+  });
 
   async function onSubmit(form: Secret) {
     if (!form.secret) {
+      setError('secret', { type: 'required', message: t('create.errorSecretRequired') });
       return;
     }
     const pw = getPassword();
@@ -88,10 +91,15 @@ export default function CreateSecret() {
             <span className="label-text">{t('create.inputSecretLabel')}</span>
           </label>
           <textarea
-            {...register('secret')}
-            className="textarea textarea-bordered w-full min-h-[100px] text-base p-4 resize-y focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-base-100"
+            {...register('secret', { required: t('create.errorSecretRequired') as string })}
+            className={`textarea textarea-bordered w-full min-h-[100px] text-base p-4 resize-y focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-base-100 ${
+              errors.secret ? 'textarea-error' : ''
+            }`}
             value={secret}
-            onChange={e => setSecret(e.target.value)}
+            onChange={e => {
+              setSecret(e.target.value);
+              register('secret').onChange(e);
+            }}
             placeholder={t('create.inputSecretPlaceholder')}
             rows={4}
           />
@@ -111,6 +119,7 @@ export default function CreateSecret() {
           <button
             className="btn btn-primary w-full h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
             type="submit"
+            disabled={!isValid || !secret}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
