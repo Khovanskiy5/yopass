@@ -81,7 +81,7 @@ test.describe('Create Secret', () => {
 
     // Message should be encrypted (not plain text)
     expect(lastRequest?.payload.message).not.toBe(testSecrets.simple.message);
-    expect(lastRequest?.payload.message.length).toBeGreaterThan(0);
+    expect(lastRequest?.payload.message?.length).toBeGreaterThan(0);
 
     // Should display the generated URLs
     const linkCode = page.locator('code').first();
@@ -381,7 +381,7 @@ test.describe('Create Secret', () => {
 
     // Message should be encrypted, not plain text
     expect(lastRequest?.payload.message).not.toBe(testSecrets.simple.message);
-    expect(lastRequest?.payload.message.length).toBeGreaterThan(0);
+    expect(lastRequest?.payload.message?.length).toBeGreaterThan(0);
 
     // Should show only short link with custom password
     await expect(

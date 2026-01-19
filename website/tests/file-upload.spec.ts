@@ -105,7 +105,7 @@ test.describe('File Upload', () => {
 
     // Message should be encrypted (not plain file content)
     expect(lastRequest?.payload.message).not.toBe(fileContent);
-    expect(lastRequest?.payload.message.length).toBeGreaterThan(0);
+    expect(lastRequest?.payload.message?.length).toBeGreaterThan(0);
     // Should be OpenPGP armored format
     expect(lastRequest?.payload.message).toMatch(/-----BEGIN PGP MESSAGE-----/);
 
@@ -535,7 +535,7 @@ test.describe('File Upload', () => {
     // File should be encrypted with OpenPGP format
     expect(lastRequest?.payload.message).not.toBe(fileContent);
     expect(lastRequest?.payload.message).toMatch(/-----BEGIN PGP MESSAGE-----/);
-    expect(lastRequest?.payload.message.length).toBeGreaterThan(0);
+    expect(lastRequest?.payload.message?.length).toBeGreaterThan(0);
 
     // Should show only short link with custom password
     await expect(

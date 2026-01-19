@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 export interface MockSecretResponse {
   message: string;
@@ -14,12 +14,19 @@ export interface MockFileResponse {
   expiration?: number;
 }
 
+export interface CapturedRequest {
+  url: string;
+  method: string;
+  payload: {
+    message?: string;
+    expiration?: number;
+    one_time?: boolean;
+    [key: string]: unknown;
+  };
+}
+
 export class MockAPI {
-  private capturedRequests: Array<{
-    url: string;
-    method: string;
-    payload: unknown;
-  }> = [];
+  private capturedRequests: Array<CapturedRequest> = [];
 
   constructor(private page: Page) {}
 
@@ -227,9 +234,7 @@ export class MockAPI {
     this.capturedRequests = [];
   }
 
-  getLastRequest(
-    url?: string,
-  ): { url: string; method: string; payload: unknown } | undefined {
+  getLastRequest(url?: string): CapturedRequest | undefined {
     if (url) {
       // Find the last request matching the URL pattern
       for (let i = this.capturedRequests.length - 1; i >= 0; i--) {
@@ -242,13 +247,11 @@ export class MockAPI {
     return this.capturedRequests[this.capturedRequests.length - 1];
   }
 
-  getAllRequests(): Array<{ url: string; method: string; payload: unknown }> {
+  getAllRequests(): Array<CapturedRequest> {
     return [...this.capturedRequests];
   }
 
-  getRequestsByUrl(
-    url: string,
-  ): Array<{ url: string; method: string; payload: unknown }> {
+  getRequestsByUrl(url: string): Array<CapturedRequest> {
     return this.capturedRequests.filter(req => req.url.includes(url));
   }
 }
