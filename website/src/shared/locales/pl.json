@@ -7,7 +7,8 @@
     "inputCustomPasswordLabel": "Własne hasło",
     "inputCustomPasswordPlaceholder": "Wpisz swoje hasło...",
     "inputOneTimeLabel": "Jednorazowe pobranie",
-    "inputGenerateKeyLabel": "Wygeneruj klucz deszyfrujący"
+    "inputGenerateKeyLabel": "Wygeneruj klucz deszyfrujący",
+    "errorSecretRequired": "Sekret jest wymagany"
   },
   "upload": {
     "title": "Prześlij plik",

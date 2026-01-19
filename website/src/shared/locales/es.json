@@ -7,7 +7,8 @@
     "inputCustomPasswordLabel": "Contraseña personalizada",
     "inputCustomPasswordPlaceholder": "Contraseña a introducir...",
     "inputOneTimeLabel": "Una sola descarga",
-    "inputGenerateKeyLabel": "Generar clave de desencriptación"
+    "inputGenerateKeyLabel": "Generar clave de desencriptación",
+    "errorSecretRequired": "El secreto es obligatorio"
   },
   "upload": {
     "title": "Subir archivo",

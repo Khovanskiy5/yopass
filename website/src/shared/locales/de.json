@@ -7,7 +7,8 @@
     "inputCustomPasswordLabel": "Eigenes Passwort",
     "inputCustomPasswordPlaceholder": "Gib dein Passwort ein...",
     "inputOneTimeLabel": "Einmaliger Download",
-    "inputGenerateKeyLabel": "Entschlüsselungsschlüssel generieren"
+    "inputGenerateKeyLabel": "Entschlüsselungsschlüssel generieren",
+    "errorSecretRequired": "Geheimnis ist erforderlich"
   },
   "upload": {
     "title": "Datei hochladen",

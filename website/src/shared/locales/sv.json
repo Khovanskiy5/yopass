@@ -7,7 +7,8 @@
     "inputCustomPasswordLabel": "Eget lösenord",
     "inputCustomPasswordPlaceholder": "Ange ditt lösenord...",
     "inputOneTimeLabel": "Endast en nedladdning",
-    "inputGenerateKeyLabel": "Skapa dekrypteringsnyckel"
+    "inputGenerateKeyLabel": "Skapa dekrypteringsnyckel",
+    "errorSecretRequired": "Hemlighet krävs"
   },
   "upload": {
     "title": "Ladda upp fil",

@@ -7,7 +7,8 @@
     "inputCustomPasswordLabel": "Aangepast wachtwoord",
     "inputCustomPasswordPlaceholder": "Voer je wachtwoord in...",
     "inputOneTimeLabel": "Eenmalige download",
-    "inputGenerateKeyLabel": "Genereer ontsleutelingssleutel"
+    "inputGenerateKeyLabel": "Genereer ontsleutelingssleutel",
+    "errorSecretRequired": "Geheim is verplicht"
   },
   "upload": {
     "title": "Bestand uploaden",

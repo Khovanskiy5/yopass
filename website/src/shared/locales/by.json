@@ -7,7 +7,8 @@
     "inputCustomPasswordLabel": "Уласны пароль",
     "inputCustomPasswordPlaceholder": "Увядзіце свой пароль...",
     "inputOneTimeLabel": "Аднаразовая загрузка",
-    "inputGenerateKeyLabel": "Згенераваць ключ дэшыфравання"
+    "inputGenerateKeyLabel": "Згенераваць ключ расшыфроўкі",
+    "errorSecretRequired": "Поле сакрэту абавязковае для запаўнення"
   },
   "upload": {
     "title": "Запампоўка файла",

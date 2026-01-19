@@ -7,7 +7,8 @@
     "inputCustomPasswordLabel": "Mot de passe personnalisé",
     "inputCustomPasswordPlaceholder": "Entrez votre mot de passe...",
     "inputOneTimeLabel": "Téléchargeable une seule fois",
-    "inputGenerateKeyLabel": "Générer une clé de déchiffrement"
+    "inputGenerateKeyLabel": "Générer une clé de déchiffrement",
+    "errorSecretRequired": "Le secret est obligatoire"
   },
   "upload": {
     "title": "Charger un fichier",

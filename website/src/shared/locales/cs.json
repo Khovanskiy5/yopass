@@ -7,7 +7,8 @@
     "inputCustomPasswordLabel": "Vlastní heslo",
     "inputCustomPasswordPlaceholder": "Zadejte své heslo...",
     "inputOneTimeLabel": "Jednorázové stažení",
-    "inputGenerateKeyLabel": "Vygenerovat dešifrovací klíč"
+    "inputGenerateKeyLabel": "Generovat dešifrovací klíč",
+    "errorSecretRequired": "Tajemství je povinné"
   },
   "upload": {
     "title": "Nahrát soubor",
