@@ -104,31 +104,30 @@ go build -o yopass-server ./cmd/yopass-server
 
 Параметры конфигурации сервера:
 
-Флаги командной строки:
+#### Таблица параметров
 
-```console
-$ ./yopass-server -h
-      --address string             адрес прослушивания (по умолчанию 0.0.0.0)
-      --port int                   порт прослушивания (по умолчанию 1337)
-      --database string            движок базы данных ('memcached' или 'redis') (по умолчанию "memcached")
-      --asset-path string          путь к папке со статическими файлами (по умолчанию "public")
-      --max-length int             максимальная длина зашифрованного секрета (по умолчанию 5242880)
-      --memcached string           адрес Memcached (по умолчанию "localhost:11211")
-      --metrics-port int           порт прослушивания сервера метрик (по умолчанию -1)
-      --redis string               URL Redis (по умолчанию "redis://localhost:6379/0")
-      --tls-cert string            путь к TLS-сертификату
-      --tls-key string             путь к TLS-ключу
-      --force-onetime-secrets      запретить создание секретов, которые не являются одноразовыми
-      --cors-allow-origin string   настройка Access-Control-Allow-Origin CORS (по умолчанию "*")
-      --disable-upload             отключить эндпоинты загрузки /file
-      --prefetch-secret            отображать информацию о том, что секрет может быть одноразовым (по умолчанию true)
-      --disable-features           отключить раздел функций во фронтенде
-      --no-language-switcher       отключить переключатель языков в интерфейсе
-      --trusted-proxies strings    доверенные IP-адреса прокси или блоки CIDR для валидации заголовка X-Forwarded-For
-      --privacy-notice-url string  URL страницы уведомления о конфиденциальности
-      --imprint-url string         URL страницы с юридической информацией (imprint)
-      --allowed-expirations ints   допустимое время истечения срока действия в секундах (по умолчанию [3600,86400,604800])
-```
+| Флаг | Переменная окружения | По умолчанию | Описание |
+| :--- | :--- | :--- | :--- |
+| `--address` | `YOPASS_ADDRESS` | `0.0.0.0` | Адрес прослушивания |
+| `--port` | `YOPASS_PORT` | `1337` | Порт прослушивания |
+| `--database` | `YOPASS_DATABASE` | `memcached` | Движок базы данных (`memcached` или `redis`) |
+| `--asset-path` | `YOPASS_ASSET_PATH` | `public` | Путь к папке со статическими файлами (фронтенд) |
+| `--max-length` | `YOPASS_MAX_LENGTH` | `5242880` | Максимальная длина зашифрованного секрета (в байтах) |
+| `--memcached` | `YOPASS_MEMCACHED` | `localhost:11211` | Адрес Memcached |
+| `--redis` | `YOPASS_REDIS` | `redis://localhost:6379/0` | URL Redis |
+| `--metrics-port` | `YOPASS_METRICS_PORT` | `-1` | Порт для метрик Prometheus (-1 для отключения) |
+| `--tls-cert` | `YOPASS_TLS_CERT` | | Путь к TLS-сертификату |
+| `--tls-key` | `YOPASS_TLS_KEY` | | Путь к TLS-ключу |
+| `--force-onetime-secrets` | `YOPASS_FORCE_ONETIME_SECRETS` | `false` | Разрешить только одноразовые секреты |
+| `--cors-allow-origin` | `YOPASS_CORS_ALLOW_ORIGIN` | `*` | Настройка CORS Access-Control-Allow-Origin |
+| `--disable-upload` | `YOPASS_DISABLE_UPLOAD` | `false` | Отключить возможность загрузки файлов |
+| `--prefetch-secret` | `YOPASS_PREFETCH_SECRET` | `true` | Показывать статус секрета перед просмотром |
+| `--disable-features` | `YOPASS_DISABLE_FEATURES` | `false` | Отключить информационный раздел во фронтенде |
+| `--no-language-switcher` | `YOPASS_NO_LANGUAGE_SWITCHER` | `false` | Скрыть переключатель языков в интерфейсе |
+| `--trusted-proxies` | `YOPASS_TRUSTED_PROXIES` | | Список доверенных IP прокси (через запятую) |
+| `--privacy-notice-url` | `YOPASS_PRIVACY_NOTICE_URL` | | URL страницы политики конфиденциальности |
+| `--imprint-url` | `YOPASS_IMPRINT_URL` | | URL страницы с юридической информацией |
+| `--allowed-expirations` | `YOPASS_ALLOWED_EXPIRATIONS` | `3600,86400,604800` | Список доступных сроков хранения (в секундах) |
 
 Зашифрованные секреты могут храниться в Memcached или Redis путем изменения флага `--database`. 
 
@@ -157,8 +156,8 @@ yopass-server --trusted-proxies 192.168.1.100,10.0.0.50
 yopass-server --trusted-proxies 192.168.1.0/24,10.0.0.0/8
 
 # Переменная окружения (полезно для Docker)
-export TRUSTED_PROXIES="192.168.1.0/24,10.0.0.0/8"
-yopass-server
+export YOPASS_TRUSTED_PROXIES="192.168.1.0/24,10.0.0.0/8"
+./yopass-server
 ```
 
 #### Типичные сценарии использования прокси:
@@ -225,6 +224,80 @@ kubectl port-forward service/yopass 1337:1337
 ```
 
 _Это предназначено для ознакомления, пожалуйста, настройте TLS при реальном использовании Yopass._
+
+## Локальная разработка
+
+Для запуска проекта локально вам понадобятся Go (>= 1.24) и Node.js (>= 22).
+
+1. Соберите фронтенд:
+   ```bash
+   cd website
+   yarn install
+   yarn build
+   cd ..
+   ```
+
+2. Запустите бэкенд, указав путь к собранному фронтенду:
+   ```bash
+   go run cmd/yopass-server/main.go --asset-path website/dist
+   ```
+
+Сервер будет доступен по адресу `http://localhost:1337`.
+
+## API
+
+Yopass предоставляет простой REST API для управления секретами. Все сообщения должны быть предварительно зашифрованы на стороне клиента (Yopass использует OpenPGP).
+
+### Создание секрета
+
+`POST /secret` или `POST /file`
+
+**Запрос:**
+```json
+{
+  "message": "зашифрованный текст",
+  "expiration": 3600,
+  "one_time": true
+}
+```
+
+**Ответ:**
+```json
+{
+  "message": "uuid-секрета"
+}
+```
+
+### Получение секрета
+
+`GET /secret/<uuid>`
+
+Возвращает JSON с зашифрованным сообщением:
+```json
+{
+  "message": "зашифрованный текст",
+  "one_time": true
+}
+```
+Если секрет одноразовый, он будет удален сразу после прочтения.
+
+### Проверка статуса
+
+`GET /secret/<uuid>/status`
+
+Позволяет узнать, существует ли секрет и является ли он одноразовым, не сжигая его.
+**Ответ:**
+```json
+{
+  "oneTime": true
+}
+```
+
+### Удаление секрета
+
+`DELETE /secret/<uuid>`
+
+Удаляет секрет до истечения срока его действия.
 
 ## Мониторинг
 
