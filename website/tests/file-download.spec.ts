@@ -474,13 +474,13 @@ test.describe('File Download', () => {
       message: encryptedForRetrieval,
     });
 
-    // Set up download listener
-    const downloadPromise = page.waitForEvent('download');
-
     // Navigate to the file URL
     await page.goto(`/#/f/${fileId}/${generatedPassword}`);
 
     // Click reveal for one-time download
+    // For Chromium/Firefox, we might need to handle the download promise before or after navigation
+    // but clicking reveal triggers the useEffect which starts the download.
+    const downloadPromise = page.waitForEvent('download');
     await page.click('button:has-text("Reveal Secure Message")');
 
     // Wait for download
@@ -529,11 +529,11 @@ test.describe('File Download', () => {
       message: encryptedMessage,
     });
 
-    // Set up download listener
-    const downloadPromise = page.waitForEvent('download');
-
     // Navigate to the file URL
     await page.goto(`/#/f/${fileId}/${password}`);
+
+    // Set up download listener
+    const downloadPromise = page.waitForEvent('download');
 
     // Wait for the download
     const download = await downloadPromise;
@@ -573,11 +573,11 @@ test.describe('File Download', () => {
       message: encryptedMessage,
     });
 
-    // Set up download listener
-    const downloadPromise = page.waitForEvent('download');
-
     // Navigate to the file URL
     await page.goto(`/#/f/${fileId}/${password}`);
+
+    // Set up download listener
+    const downloadPromise = page.waitForEvent('download');
 
     // Wait for the download
     const download = await downloadPromise;

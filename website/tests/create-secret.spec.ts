@@ -247,11 +247,20 @@ test.describe('Create Secret', () => {
   });
 
   test('should require secret text to submit', async ({ page }) => {
-    // Try to submit empty form
-    await page.click('button[type="submit"]');
+    // Submit button should be disabled when secret is empty
+    const submitButton = page.locator('button[type="submit"]');
+    await expect(submitButton).toBeDisabled();
 
-    // Should stay on form (no redirect to result)
-    await expect(page.locator('h2:has-text("Encrypt message")')).toBeVisible();
+    // Fill secret and it should be enabled
+    await page.fill(
+      'textarea[placeholder="Enter your secret..."]',
+      testSecrets.simple.message,
+    );
+    await expect(submitButton).toBeEnabled();
+
+    // Clear and it should be disabled again
+    await page.fill('textarea[placeholder="Enter your secret..."]', '');
+    await expect(submitButton).toBeDisabled();
   });
 
   test('should copy URL to clipboard on result page', async ({ page }) => {
