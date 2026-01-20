@@ -51,22 +51,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: 22
-          cache: "yarn"
-          cache-dependency-path: website/yarn.lock
+          bun-version: latest
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: bun install --frozen-lockfile
       - name: Lint
-        run: yarn tsc && yarn run lint
+        run: bun x tsc && bun run lint
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: bun x playwright install --with-deps
 
       - name: Run Playwright tests
-        run: yarn test
+        run: bun run test
         env:
           CI: true
 

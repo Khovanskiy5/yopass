@@ -6,12 +6,12 @@ COPY . .
 RUN CGO_ENABLED=0 go build -o yopass ./cmd/yopass && \
     CGO_ENABLED=0 go build -o yopass-server ./cmd/yopass-server
 
-FROM node:22 AS website
+FROM oven/bun:1 AS website
 WORKDIR /website
-COPY website/package.json website/yarn.lock ./
-RUN yarn install --network-timeout 600000
+COPY website/package.json website/bun.lock ./
+RUN bun install --frozen-lockfile
 COPY website .
-RUN yarn build
+RUN bun run build
 
 FROM gcr.io/distroless/static
 COPY --from=app /yopass/yopass /yopass/yopass-server /

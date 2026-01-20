@@ -232,8 +232,8 @@ _Это предназначено для ознакомления, пожалу
 1. Соберите фронтенд:
    ```bash
    cd website
-   yarn install
-   yarn build
+   bun install
+   bun run build
    cd ..
    ```
 

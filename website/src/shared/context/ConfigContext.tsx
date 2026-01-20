@@ -38,14 +38,19 @@ async function loadConfig(): Promise<Config> {
       const url = `${backendDomain}/config`;
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error(`Failed to fetch config from ${url}: ${response.statusText}`);
+        throw new Error(
+          `Failed to fetch config from ${url}: ${response.statusText}`,
+        );
       }
       const text = await response.text();
       let data;
       try {
         data = JSON.parse(text);
       } catch (e) {
-        console.error('Failed to parse config JSON. Received content:', text.substring(0, 100));
+        console.error(
+          'Failed to parse config JSON. Received content:',
+          text.substring(0, 100),
+        );
         throw e;
       }
       if (typeof data !== 'object' || data === null) {

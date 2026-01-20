@@ -44,7 +44,10 @@ export default function CreateSecret() {
 
   async function onSubmit(form: Secret) {
     if (!form.secret) {
-      setError('secret', { type: 'required', message: t('create.errorSecretRequired') });
+      setError('secret', {
+        type: 'required',
+        message: t('create.errorSecretRequired'),
+      });
       return;
     }
     const pw = getPassword();
@@ -91,7 +94,9 @@ export default function CreateSecret() {
             <span className="label-text">{t('create.inputSecretLabel')}</span>
           </label>
           <textarea
-            {...register('secret', { required: t('create.errorSecretRequired') as string })}
+            {...register('secret', {
+              required: t('create.errorSecretRequired') as string,
+            })}
             className={`textarea textarea-bordered w-full min-h-[100px] text-base p-4 resize-y focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-base-100 ${
               errors.secret ? 'textarea-error' : ''
             }`}
