@@ -479,7 +479,9 @@ test.describe('File Download', () => {
     });
 
     // Navigate to the file URL
-    await page.goto(`/#/f/${capturedFileId}/${encodeURIComponent(generatedPassword)}`);
+    await page.goto(
+      `/#/f/${capturedFileId}/${encodeURIComponent(generatedPassword)}`,
+    );
 
     // Wait for the reveal button to be visible
     await expect(
