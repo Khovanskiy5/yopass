@@ -425,6 +425,9 @@ test.describe('File Download', () => {
     // Navigate to upload page
     await page.goto('/#/upload');
 
+    // Wait for page to be ready
+    await expect(page.locator('input[type="file"]')).toBeAttached();
+
     // Upload file
     await page.setInputFiles('input[type="file"]', {
       name: uploadedFilename,
@@ -448,8 +451,9 @@ test.describe('File Download', () => {
     expect(fullUrl).toContain(`/f/${fileId}/`);
 
     // Extract the actual generated password from the URL
-    const urlMatch = fullUrl?.match(/\/f\/[^/]+\/([^#\s]+)/);
-    const generatedPassword = urlMatch ? urlMatch[1] : '';
+    const urlMatch = fullUrl?.match(/\/f\/([^/]+)\/([^#\s]+)/);
+    const capturedFileId = urlMatch ? urlMatch[1] : fileId;
+    const generatedPassword = urlMatch ? decodeURIComponent(urlMatch[2]) : '';
 
     // Step 2: Download the file using the generated link
     // Create properly encrypted content for retrieval
@@ -463,19 +467,24 @@ test.describe('File Download', () => {
     });
 
     // Mock file retrieval
-    await page.route(`**/file/${fileId}/status`, async route => {
+    await page.route(`**/file/${capturedFileId}/status`, async route => {
       await route.fulfill({
         status: 200,
         json: { oneTime: true },
       });
     });
 
-    await mockAPI.mockGetFile(fileId, {
+    await mockAPI.mockGetFile(capturedFileId, {
       message: encryptedForRetrieval,
     });
 
     // Navigate to the file URL
-    await page.goto(`/#/f/${fileId}/${generatedPassword}`);
+    await page.goto(`/#/f/${capturedFileId}/${encodeURIComponent(generatedPassword)}`);
+
+    // Wait for the reveal button to be visible
+    await expect(
+      page.locator('button:has-text("Reveal Secure Message")'),
+    ).toBeVisible();
 
     // Click reveal for one-time download
     // For Chromium/Firefox, we might need to handle the download promise before or after navigation
